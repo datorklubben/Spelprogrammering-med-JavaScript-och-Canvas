@@ -3,6 +3,7 @@ window.onload = init;
 function start(){}
 function update(){}
 
+// deprecated, will be removed!
 red       = "rgb(255, 0, 0)";
 green     = "rgb(0, 255, 0)";
 blue      = "rgb(0, 0, 255)";
