@@ -221,3 +221,15 @@ function rgb(r, g, b)
 {
   return "rgb(" + r + "," + g + "," + b + ")";
 }
+
+function line(x1, y1, x2, y2, color)
+{
+  context2D.strokeStyle = color;
+  context2D.lineWidth   = 1;
+  context2D.beginPath();
+  context2D.moveTo(x1, y1);
+  context2D.lineTo(x2, y2);
+  context2D.stroke();
+  context2D.closePath();
+}
+
