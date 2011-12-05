@@ -61,7 +61,9 @@ function init()
   canvas.onmousedown = mouseDown;
   canvas.onmouseup   = mouseUp;
   canvas.onmousemove = mouseMovement;
-  
+  canvas.ontouchstart = touchDown;
+  canvas.ontouchend = touchUp;
+
   FPS = 30;
   
   start();
@@ -73,6 +75,17 @@ function stopUpdate()
 {
   clearInterval(theAnimation);
 }
+
+function touchDown(e) 
+{
+  mouseLeftDown = true;
+}
+
+function touchUp(e) 
+{
+  mouseLeftDown = false;
+}
+
 
 function mouseDown(event)
 {
@@ -125,7 +138,7 @@ function mouseMovement(event)
     pageX = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
     pageY = event.clientY + document.body.scrollLeft + document.documentElement.scrollLeft;
   }
-  
+
   mouseX = pageX - canvas.offsetLeft;
   mouseY = pageY - canvas.offsetTop;
 }
