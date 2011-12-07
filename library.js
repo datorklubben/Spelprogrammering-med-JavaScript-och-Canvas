@@ -45,6 +45,8 @@ function init()
   totalWidth = canvas.width;
   totalHeight = canvas.height;
 
+  pi = Math.PI;
+
   keyboard = new Array();
   mouse    = new Array();
   
@@ -231,6 +233,11 @@ function rotate(degrees)
   context2D.rotate(degrees * Math.PI / 180);
 }
 
+function rotateRadians(radians)
+{
+  context2D.rotate(radians);
+}
+
 function rgb(r, g, b)
 {
   return "rgb(" + r + "," + g + "," + b + ")";
@@ -247,3 +254,31 @@ function line(x1, y1, x2, y2, width, color)
   context2D.closePath();
 }
 
+function sin(angle)
+{
+  return Math.sin(angle);
+}
+
+function cos(angle)
+{
+  return Math.cos(angle);
+}
+
+function emptyCircle(x, y, r, lineWidth, color)
+{
+  context2D.beginPath();
+  context2D.arc(x, y, r, 0, Math.PI * 2, true);
+  context2D.closePath();
+  context2D.lineWidth = lineWidth;
+  context2D.strokeStyle = color;
+  context2D.stroke();
+}
+
+function emptyArc(x, y, r, angle, lineWidth, color)
+{
+  context2D.beginPath();
+  context2D.arc(x, y, r, 0, -angle, true);
+  context2D.lineWidth = lineWidth;
+  context2D.strokeStyle = color;
+  context2D.stroke();
+}
