@@ -264,6 +264,26 @@ function cos(angle)
   return Math.cos(angle);
 }
 
+function tan(angle)
+{
+  return Math.tan(angle);
+}
+
+function sqrt(x)
+{
+  return Math.sqrt(x);
+}
+
+function abs(x)
+{
+  return Math.abs(x);
+}
+
+function pow(x, y)
+{
+  return Math.pow(x, y);
+}
+
 function emptyCircle(x, y, r, lineWidth, color)
 {
   context2D.beginPath();
