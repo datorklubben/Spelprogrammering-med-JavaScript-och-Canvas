@@ -284,6 +284,11 @@ function pow(x, y)
   return Math.pow(x, y);
 }
 
+function floor(x)
+{
+  return Math.floor(x);
+}
+
 function emptyCircle(x, y, r, lineWidth, color)
 {
   context2D.beginPath();
@@ -301,4 +306,12 @@ function emptyArc(x, y, r, angle, lineWidth, color)
   context2D.lineWidth = lineWidth;
   context2D.strokeStyle = color;
   context2D.stroke();
+}
+
+function maximizeCanvas()
+{
+  canvas.width = window.innerWidth-1;
+  canvas.height = window.innerHeight-1;
+  totalWidth = canvas.width;
+  totalHeight = canvas.height;
 }
