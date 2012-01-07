@@ -9,8 +9,8 @@ function drawPoint(x, y, color, label, size)
   translate(origoX, origoY);
   circle(x*step, -y*step, size, color);
 
-  var xOffset = x > 0 ? -4 : label.length*12;
-  var yOffset = y > 0 ? 0 : 20;
+  var xOffset = x > 0 ? -4 : label.length*12+12;
+  var yOffset = y > 0 ? 0 : 24;
 
   text(label,x*step+3-xOffset, -y*step-3+yOffset, color, 20);
 
@@ -49,7 +49,7 @@ function drawLabel(x, y, l, color, size)
   var size = typeof(size) != 'undefined' ? size : 20;
   save();
   translate(origoX, origoY);
-  text(label, x*step, -y*step, color, size);
+  text(l, x*step, -y*step, color, size);
   restore();    
 }
  
@@ -89,7 +89,7 @@ function point3D(x, y, z, color)
 
     var zdiff = (zmax+this.z)/zmax;
 
-    var size = 5+this.z*2 > 0 ? 5+this.z*2 : 0.1;
+    var size = this.z*2+2 > 1 ? this.z*2+2 : 1;
 
     circle(this.x*step*zdiff, -this.y*step*zdiff, size, this.color);
     restore();
@@ -120,7 +120,10 @@ function point3D(x, y, z, color)
   {
     save();
     translate(origoX, origoY);
-    line(this.x*step, -this.y*step, point2.x*step, -point2.y*step, 1, color);
+    var zmax = 10;
+    var zdiff1 = (zmax+this.z)/zmax;
+    var zdiff2 = (zmax+point2.z)/zmax;
+    line(this.x*step*zdiff1, -this.y*step*zdiff1, point2.x*step*zdiff2, -point2.y*step*zdiff2, 1, color);
     restore();    
   }
 
@@ -133,6 +136,17 @@ function point3D(x, y, z, color)
   }
 }
 
+function drawPoint3D(x, y, z, color)
+{
+  var color = typeof(color) != 'undefined' ? color : "black";
+
+  var zmax = 10;
+  var zdiff = (zmax+z)/zmax;
+  var size = z*2+2 > 1 ? z*2+2 : 1;
+
+  drawPoint(x*zdiff, y*zdiff, color, "", size);
+}
+
 
 function drawAxes()
 {
@@ -142,7 +156,7 @@ function drawAxes()
 
   line(origoX, 0, origoX, totalHeight, 2, "black");
   line(0, origoY, totalWidth, origoY, 2, "black");
-  for(i=-4;i<=4;i++)
+  for(i=-3;i<=3;i++)
     line(origoX+(i*step), origoY-10, origoX+(i*step), origoY+10, 1, "black");
   for(i=-2;i<=2;i++)
     line(origoX-10, origoY+(i*step), origoX+10, origoY+(i*step), 1, "black");
