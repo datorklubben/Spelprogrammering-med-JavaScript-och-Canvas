@@ -299,6 +299,11 @@ function emptyCircle(x, y, r, lineWidth, color)
   context2D.stroke();
 }
 
+function ring(x, y, r, lineWidth, color)
+{
+  emptyCircle(x, y, r, lineWidth, color);
+}
+
 function emptyArc(x, y, r, angle, lineWidth, color)
 {
   context2D.beginPath();
@@ -315,3 +320,44 @@ function maximizeCanvas()
   totalWidth = canvas.width;
   totalHeight = canvas.height;
 }
+
+function padString(subject, character, length, side)
+{
+  subject = "" + subject;
+  while (subject.length < length)
+    subject = side == "left" ? character + subject : subject + character;
+  return subject;
+}
+
+function logger(message)
+{
+  var log = document.getElementById('log');
+  
+  var date = new Date();
+  
+  var time = [ padString(date.getHours(), '0', 2, 'left'),
+               padString(date.getMinutes(), '0', 2, 'left'),
+               padString(date.getSeconds(), '0', 2, 'left') ].join(':');
+  
+  if (!log)
+  {
+    log = document.createElement('table');
+    log.id = 'log';
+    log.style.border = '5px outset white';
+    log.style.background = 'black';
+    log.style.color = 'white';
+    log.style.margin = '1em';
+    document.body.appendChild(log);
+  }
+  
+  var row = log.insertRow(-1);
+  row.innerHTML =
+    '<td style="vertical-align: top"><pre>'+ time +
+    '  </pre></td><td><pre>'+
+    message.replace(/</, '&lt;') +'</pre></td>';
+}
+
+window.onerror = function(message, url, line)
+{
+  logger('ERROR: '+ message +' (line '+ line +')');
+};
