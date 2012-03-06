@@ -58,13 +58,13 @@ function init()
   mouseMiddleDown = false;
   mouseRightDown  = false;
   
-  document.onkeydown   = keyPressed;
-  document.onkeyup     = keyReleased;
-  canvas.onmousedown = mouseDown;
-  canvas.onmouseup   = mouseUp;
-  canvas.onmousemove = mouseMovement;
+  document.onkeydown  = keyPressed;
+  document.onkeyup    = keyReleased;
+  canvas.onmousedown  = mouseDown;
+  canvas.onmouseup    = mouseUp;
+  canvas.onmousemove  = mouseMovement;
   canvas.ontouchstart = touchDown;
-  canvas.ontouchend = touchUp;
+  canvas.ontouchend   = touchUp;
 
   FPS = 30;
   
@@ -87,7 +87,6 @@ function touchUp(e)
 {
   mouseLeftDown = false;
 }
-
 
 function mouseDown(event)
 {
