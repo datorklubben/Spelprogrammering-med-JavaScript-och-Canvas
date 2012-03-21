@@ -65,6 +65,7 @@ function init()
   canvas.onmousemove  = mouseMovement;
   canvas.ontouchstart = touchDown;
   canvas.ontouchend   = touchUp;
+  canvas.ontouchmove  = touchMove;
 
   FPS = 30;
   
@@ -86,6 +87,16 @@ function touchDown(e)
 function touchUp(e) 
 {
   mouseLeftDown = false;
+}
+
+function touchMove(e)
+{
+  if (e.touches.length == 1)
+  {
+    mouseX = e.touches[0].clientX;
+    mouseY = e.touches[0].clientY;
+  }
+  return false;
 }
 
 function mouseDown(event)
