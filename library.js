@@ -371,3 +371,44 @@ window.onerror = function(message, url, line)
 {
   logger('ERROR: '+ message +' (line '+ line +')');
 };
+
+function getSoundChannel()
+{
+  var channels = document.getElementsByTagName('audio');
+  
+  if (channels.length == 0)
+  {
+    for (var i = 0; i < 8; i++)
+      document.body.appendChild(document.createElement('audio'))
+    channels = document.getElementsByTagName('audio');
+  }
+  
+  if (typeof(currentChannel) == 'undefined' || ++currentChannel >= channels.length)
+    currentChannel = 0;
+  
+  return channels[currentChannel];
+}
+
+function preloadSound(sound)
+{
+  if (! sound.match(/\/|\.[a-z]+$/i))
+    sound = 'http://spelprogrammering.nu/sounds/' + sound + '.mp3';
+  
+  var channel = getSoundChannel();
+  channel.preload = 'auto';
+  channel.src = sound;
+}
+
+function playSound(sound, volume)
+{
+  if (! sound.match(/\/|\.[a-z]+$/i))
+    sound = 'http://spelprogrammering.nu/sounds/' + sound + '.mp3';
+  
+  if (typeof(volume) == 'undefined')
+    var volume = 1;
+  
+  var channel = getSoundChannel();
+  channel.volume = volume;
+  channel.src = sound;
+  channel.play();
+}
