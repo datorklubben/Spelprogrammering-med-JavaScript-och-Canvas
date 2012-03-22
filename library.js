@@ -389,14 +389,20 @@ window.onerror = function(message, url, line)
 
 function getSoundChannel()
 {
-  var channels = document.getElementsByTagName('audio');
+  var soundEffects = document.getElementById('soundEffects');
   
-  if (channels.length == 0)
+  if (!soundEffects)
   {
+    soundEffects = document.createElement('div');
+    soundEffects.id = 'soundEffects';
+    
     for (var i = 0; i < 8; i++)
-      document.body.appendChild(document.createElement('audio'))
-    channels = document.getElementsByTagName('audio');
+      soundEffects.appendChild(document.createElement('audio'));
+    
+    document.body.appendChild(soundEffects);
   }
+  
+  var channels = soundEffects.children;
   
   if (typeof(currentChannel) == 'undefined' || ++currentChannel >= channels.length)
     currentChannel = 0;
@@ -423,6 +429,26 @@ function playSound(sound, volume)
     var volume = 1;
   
   var channel = getSoundChannel();
+  channel.volume = volume;
+  channel.src = sound;
+  channel.play();
+}
+
+function playBackgroundSound(sound, volume)
+{
+  var channel = document.getElementById('backgroundSound');
+  
+  if (!channel)
+  {
+    channel = document.createElement('audio');
+    channel.id = 'backgroundSound';
+    channel.loop = true;
+    document.body.appendChild(channel);
+  }
+  
+  if (typeof(volume) == 'undefined')
+    var volume = 1;
+  
   channel.volume = volume;
   channel.src = sound;
   channel.play();
