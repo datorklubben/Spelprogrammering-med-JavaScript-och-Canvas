@@ -70,6 +70,11 @@ function drawCartesianLine(x1, y1, x2, y2, color)
 }
 
 
+function line3D(point1, point2, color)
+{
+  point1.lineTo(point2, color);
+}
+
 function point3D(x, y, z, color)
 {
   this.x = x;

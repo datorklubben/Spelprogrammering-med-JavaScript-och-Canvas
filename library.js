@@ -269,14 +269,29 @@ function sin(angle)
   return Math.sin(angle);
 }
 
+function asin(angle)
+{
+  return Math.asin(angle);
+}
+
 function cos(angle)
 {
   return Math.cos(angle);
 }
 
+function acos(angle)
+{
+  return Math.acos(angle);
+}
+
 function tan(angle)
 {
   return Math.tan(angle);
+}
+
+function atan(angle)
+{
+  return Math.atan(angle);
 }
 
 function sqrt(x)
