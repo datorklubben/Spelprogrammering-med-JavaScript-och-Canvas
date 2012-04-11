@@ -3,20 +3,6 @@ window.onload = init;
 function start(){}
 function update(){}
 
-// deprecated, will be removed!
-red       = "rgb(255, 0, 0)";
-green     = "rgb(0, 255, 0)";
-blue      = "rgb(0, 0, 255)";
-yellow    = "rgb(255, 255, 0)";
-pink      = "rgb(255, 192, 203)";
-violet    = "rgb(238, 130, 238)";
-indigo    = "rgb(75, 0, 130)";
-turquoise = "rgb(0, 245, 255)";
-cyan      = "rgb(0, 255, 255)";
-orange    = "rgb(255, 165, 0)";
-white     = "rgb(255, 255, 255)";
-black     = "rgb(0, 0, 0)";
-
 up    = 38;
 down  = 40;
 left  = 37;
@@ -40,6 +26,16 @@ d     = 68;
 function init()
 {
   canvas = document.getElementById('canvas');
+  if (!canvas)
+  {
+    canvas = document.createElement('canvas');
+    canvas.id = 'canvas';
+    canvas.style.position = 'absolute';
+    canvas.style.left = '0';
+    canvas.style.top = '0';
+    document.body.appendChild(canvas);
+  }
+
   context2D = canvas.getContext('2d');
 
   totalWidth = canvas.width;
@@ -70,6 +66,8 @@ function init()
   FPS = 30;
 
   suppressErrors = false;
+
+  maximizeCanvas();
   
   start();
   
