@@ -1,9 +1,12 @@
+Spelprogrammering med JavaScript och Canvas - Game development with JavaScript and Canvas
+=========================================================================================
+
 Usage of simple.js:
 ------------------
 
 Create an html file containing this:
 
-    <script src="simple.js"></script>
+    <script src="http://spelprogrammering.nu/simple.js"></script>
     <script>
       function start()
       {
