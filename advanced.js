@@ -128,6 +128,7 @@ function RoboroCanvas(id)
   };
   
   this.FPS = 30;
+  this.running = true;
   
   this.canvas = canvas;
   
@@ -135,16 +136,19 @@ function RoboroCanvas(id)
   
   this.runUpdate = function()
   {
-    env.update();
-    env.updateTimer = setTimeout(env.runUpdate, 1000/env.FPS);
+    if (env.running)
+    {
+      env.update();
+      env.updateTimer = setTimeout(env.runUpdate, 1000/env.FPS);
+    }
   };
+  
+  this.updateTimer = setTimeout(this.runUpdate, 1000/this.FPS);
   
   this.stopUpdate = function()
   {
-    clearInterval(env.updateTimer);
-  }
-  
-  this.updateTimer = setTimeout(this.runUpdate, 1000/this.FPS);
+    env.running = false;
+  };
   
   this.circle = function(x, y, radius, color) 
   {
