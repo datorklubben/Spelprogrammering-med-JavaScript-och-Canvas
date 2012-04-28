@@ -30,6 +30,11 @@ function init()
   canvas.style.top = '0';
   document.body.setAttribute("oncontextmenu", "return false");
   document.body.appendChild(canvas);
+  var head = document.getElementsByTagName('head')[0];
+  var iOSMeta = document.createElement('meta');
+  iOSMeta.name = "apple-mobile-web-app-capable";
+  iOSMeta.content = "yes";
+  head.appendChild(iOSMeta);
   
   maximizeCanvas();
 
@@ -38,10 +43,10 @@ function init()
   var simplify = function() {
 
     c = new RoboroCanvas('canvas');
-    
-    env.FPS = 30;
+    k = new RoboroKeyboard();
     
     env.mouse = c.mouse;
+    env.keyboard = k;
 
     functions = ["circle", 
                  "rectangle", 
@@ -60,7 +65,8 @@ function init()
                  "translate",
                  "rotate",
                  "rotateRadians",
-                 "line"];
+                 "line",
+                 "stopUpdate"];
 
     for (i = 0; i < functions.length; i++)
       eval("env." + functions[i] + " = function() { c." + functions[i] + ".apply(c, arguments) }");
@@ -68,15 +74,11 @@ function init()
     if (typeof(start) != "undefined") 
       start();
     if (typeof(update) != "undefined") 
-    {
-      updateTimer = setInterval(update, 1000/env.FPS);
-    }
-
-    env.stopUpdate = function()
-    {
-      clearInterval(updateTimer);
-    }
-
+      c.update = function()
+      {
+        c.FPS = env.FPS;
+        update();
+      }
   };
 
   loadScript("http://www.spelprogrammering.nu/advanced.js", simplify);

@@ -139,7 +139,7 @@ function RoboroCanvas(id)
     env.updateTimer = setTimeout(env.runUpdate, 1000/env.FPS);
   };
   
-  function stopUpdate()
+  this.stopUpdate = function()
   {
     clearInterval(env.updateTimer);
   }
