@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Spelprogrammering-med-javascript-och-canvas by datorklubben</title>
+    
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Spelprogrammering-med-javascript-och-canvas</h1>
+        <p>Ett bibliotek i JavaScript som förenklar spelutveckling</p>
+        <p class="view"><a href="https://github.com/datorklubben/Spelprogrammering-med-JavaScript-och-Canvas">View the Project on GitHub <small>datorklubben/Spelprogrammering-med-JavaScript-och-Canvas</small></a></p>
+        <ul>
+          <li><a href="https://github.com/datorklubben/Spelprogrammering-med-JavaScript-och-Canvas/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/datorklubben/Spelprogrammering-med-JavaScript-och-Canvas/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/datorklubben/Spelprogrammering-med-JavaScript-och-Canvas">Fork On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>Spelprogrammering med JavaScript och Canvas - Game development with JavaScript and Canvas</h1>
+
+<h2>Usage of simple.js:</h2>
+
+<p>Create an html file containing this:</p>
+
+<pre><code>&lt;script src="http://spelprogrammering.nu/simple.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  function start()
+  {
+    circle(130, 100, 550, "yellow");
+    rectangle(450, 0, 600, 400, "blue");
+    circle(200, 150, 70, "red");
+    triangle(300, 20, 180, 700, 600, 400, "green");
+    ring(400, 200, 100, 10, "gray");
+    line(20, 20, 1750, 900, 10, "brown");
+    arc(500, 500, 300, 70, 20, "pink");
+  }
+  function update()
+  {
+    circle(mouse.x, mouse.y, 30, "red");
+  }
+&lt;/script&gt;
+</code></pre>
+
+<p>...and you will see different types of shapes and be able to paint with the mouse. No extra HTML is required which makes it possible for beginners to start coding at once!</p>
+
+<h2>Usage of advanced.js:</h2>
+
+<p>Create an html file containing this:</p>
+
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;canvas style="border: 1px solid red" id="one" width="800" height="200"&gt;&lt;/canvas&gt;
+    &lt;br /&gt;
+    &lt;canvas style="border: 1px solid blue;" id="two" width="800" height="200"&gt;&lt;/canvas&gt;
+
+    &lt;script type="text/javascript" src="http://spelprogrammering.nu/advanced.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript"&gt;
+
+      a = new RoboroCanvas('one');
+      b = new RoboroCanvas('two');
+
+      a.update = function()
+      {
+        a.circle(a.mouse.x, a.mouse.y, a.mouse.left ? 10 : 2, "brown");
+      };
+
+      b.update = function()
+      {
+        b.circle(b.mouse.x, b.mouse.y, b.mouse.left ? 10 : 2, "yellow");
+      };
+
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/datorklubben">datorklubben</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
