@@ -12,7 +12,8 @@ function drawPoint(x, y, color, label, size)
   var xOffset = x > 0 ? -4 : label.length*12+12;
   var yOffset = y > 0 ? 0 : 24;
 
-  text(label,x*step+3-xOffset, -y*step-3+yOffset, color, 20);
+  if (label != "")
+    text(label,x*step+3-xOffset, -y*step-3+yOffset, color, 20);
 
   restore();
 }
