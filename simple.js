@@ -13,16 +13,15 @@ function loadScript(url, callback)
 
 function prepareCanvas()
 {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  canvas.style.width = window.innerWidth;
+  canvas.width        = window.innerWidth;
+  canvas.height       = window.innerHeight;
+  canvas.style.width  = window.innerWidth;
   canvas.style.height = window.innerHeight;
-
-  totalWidth  = canvas.width;
-  totalHeight = canvas.height;
-  origoX      = totalWidth/2;
-  origoY      = totalHeight/2;
-  step        = totalHeight/6;
+  totalWidth          = canvas.width;
+  totalHeight         = canvas.height;
+  origoX              = totalWidth/2;
+  origoY              = totalHeight/2;
+  step                = totalHeight/6;
 }
 
 function init()
@@ -44,76 +43,74 @@ function init()
   
   prepareCanvas();
 
-  var env = this;
-
-  var simplify = function() {
-
+  var simplify = function()
+  {
     c = new RoboroCanvas('canvas');
     k = new RoboroKeyboard();
     
-    env.mouse = c.mouse;
-    env.keyboard = k;
-
+    window.mouse = c.mouse;
+    window.keyboard = k;
+    
     mathSimplifications = ["sin",
                            "cos",
                            "tan",
                            "asin",
                            "acos",
                            "atan",
-                           "sqrt"];
-
+                           "sqrt",
+                           "PI"];
+    
     for (i = 0; i < mathSimplifications.length; i++)
-      eval(mathSimplifications[i] + " = Math." + mathSimplifications[i]);
-
-    pi = Math.PI;
-
-    functions = ["circle", 
-                 "rectangle", 
-                 "triangle", 
-                 "ring", 
-                 "arc",
-                 "text",
-                 "random",
-                 "randomAlternative",
-                 "picture",
-                 "clearScreen",
-                 "fill",
-                 "distance",
-                 "save",
-                 "restore",
-                 "translate",
-                 "rotate",
-                 "rotateRadians",
-                 "line",
-                 "stopUpdate"];
-
-    for (i = 0; i < functions.length; i++)
-      eval("env." + functions[i] + " = function() { c." + functions[i] + ".apply(c, arguments) }");
-
+      window[mathSimplifications[i].toLowerCase()] = Math[mathSimplifications[i]];
+    
+    var functions =
+      ["circle", 
+       "rectangle", 
+       "triangle", 
+       "ring", 
+       "arc",
+       "text",
+       "random",
+       "randomAlternative",
+       "picture",
+       "clearScreen",
+       "fill",
+       "distance",
+       "save",
+       "restore",
+       "translate",
+       "rotate",
+       "rotateRadians",
+       "line",
+       "stopUpdate"];
+    
+    for (var i = functions.length; i >= 0; i--)
+      window[functions[i]] = new Function('c.'+ functions[i] +'.apply(c, arguments);');
+    
     if (typeof(start) != "undefined") 
       start();
     if (typeof(update) != "undefined") 
       c.update = function()
       {
-        c.FPS = env.FPS;
+        c.FPS = window.FPS;
         update();
       }
   };
-
+  
   loadScript("http://www.spelprogrammering.nu/advanced.js", simplify);
 }
 
-function drawCartesianPoint(x, y, color, label, size)
+function drawPoint(x, y, color, label, size)
 {
   var label = typeof(label) != 'undefined' ? label : "";
   var size = typeof(size) != 'undefined' ? size : 20;
   save();
   translate(origoX, origoY);
   circle(x*step, -y*step, size, color);
-
+  
   var xOffset = x > 0 ? -4 : label.length*12+12;
   var yOffset = y > 0 ? 0 : 24;
-
+  
   text(x*step+3-xOffset, -y*step-3+yOffset, size, label, color);
 
   restore();
@@ -279,6 +276,7 @@ function startOOWorld()
   var blues = [
       "#99BBFF", "#6699FF", "#3366FF", "#0033CC"
   ];
+  
   var waveOffs = [0, 30, 60, 90];
   var waveHeight = 100;
   var stars = null;
@@ -288,17 +286,18 @@ function startOOWorld()
     stars = [];
     for (var i=0; i<50; i++) 
     {
-        stars.push({
-           x: Math.random()*totalWidth,
-           y: Math.random()*120,
-	   size: Math.random()*3
-        });
+      stars.push({
+        x: Math.random()*totalWidth,
+        y: Math.random()*120,
+        size: Math.random()*3
+      });
     }
   }
   
   function drawWorld() 
   {
-      if (!stars) initStars();
+    if (!stars)
+      initStars();
     
     function wave(x) 
     {
@@ -313,7 +312,7 @@ function startOOWorld()
       c.context2D.moveTo(0, y);
       for (var i=0; i<totalWidth; i++) 
       {
-	  c.context2D.lineTo(i, y+wave((i+waveOff)/30)*50);
+        c.context2D.lineTo(i, y+wave((i+waveOff)/30)*50);
       }
       c.context2D.lineTo(totalWidth, totalHeight);
       c.context2D.lineTo(0, totalHeight);
@@ -333,10 +332,9 @@ function startOOWorld()
         
     for (var i=0; i<blues.length; i++) 
     {
-	drawWaveblock(waveHeight + i*60, blues[i], waveOffs[i]);
-	waveOffs[i] += i+2;
+      drawWaveblock(waveHeight + i*60, blues[i], waveOffs[i]);
+      waveOffs[i] += i+2;
     }
-    
   }
   
   function drawWorldAfter() 
