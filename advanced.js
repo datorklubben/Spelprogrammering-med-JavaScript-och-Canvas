@@ -320,3 +320,164 @@ function RoboroCanvas(id)
     this.context2D.closePath();
   };
 }
+
+function RoboroMath(origoX, origoY, step, canvas)
+{
+  this.origoX = origoX;
+  this.origoY = origoY;
+  this.step   = step;
+  this.c      = canvas;
+
+  var env = this;
+
+  this.point = function(x, y, color, label, size)
+  {
+    var label = typeof(label) != 'undefined' ? label : "";
+    var size = typeof(size) != 'undefined' ? size : 20;
+    env.c.save();
+    env.c.translate(this.origoX, this.origoY);
+    env.c.circle(x*this.step, -y*this.step, size, color);
+    
+    var xOffset = x > 0 ? -4 : label.length*12+12;
+    var yOffset = y > 0 ? 0 : 24;
+    
+    env.c.text(x*this.step+3-xOffset, -y*this.step-3+yOffset, size, label, color);
+    
+    env.c.restore();
+  }
+
+  this.polarPoint = function(v, r, color, label, size)
+  {
+    var label = typeof(label) != 'undefined' ? label : "";
+    var size = typeof(size) != 'undefined' ? size : 20;
+    var x = r*Math.cos(v); 
+    var y = r*Math.sin(v); 
+    point(x, y, color, label, size);
+  }
+
+  this.polarLine = function(v1, r1, v2, r2, color)
+  {
+    var x1 = r1*Math.cos(v1); 
+    var y1 = r1*Math.sin(v1); 
+    var x2 = r2*Math.cos(v2); 
+    var y2 = r2*Math.sin(v2); 
+    
+    this.cartesianLine(x1, y1, x2, y2, color);
+  }
+
+  this.cartesianLabel = function(x, y, size, label, color)
+  {
+    env.c.save();
+    env.c.translate(this.origoX, this.origoY);
+    env.c.text(x*this.step, -y*this.step, size, label, color);
+    env.c.restore();
+  }
+ 
+  this.cartesianLine = function(x1, y1, x2, y2, color)
+  {
+    env.c.save();
+    env.c.translate(this.origoX, this.origoY);
+    env.c.line(x1*this.step, -y1*this.step, x2*this.step, -y2*this.step, 2, color);
+    env.c.restore();    
+  }
+
+  this.line3D = function(point1, point2, color)
+  {
+    point1.lineTo(point2, color);
+  }
+  
+  this.Point3D = function(x, y, z, color)
+  {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.color = color;
+
+    this.draw = function()
+    {
+      env.c.save();
+      env.c.translate(env.origoX, env.origoY);
+      var zmax = 10;
+      var zdiff = (zmax+this.z)/zmax;      
+      var size = this.z+4 > 0 ? this.z+4+2 : 2;
+      
+      env.c.circle(this.x*env.step*zdiff, -this.y*env.step*zdiff, size, this.color);
+      env.c.restore();
+    }
+    
+    this.rotate = function(dvx, dvy, dvz)
+    {
+      // rotate about x
+      var oldY = this.y;
+      var oldZ = this.z;
+      this.y = oldY*Math.cos(dvx)-oldZ*Math.sin(dvx);
+      this.z = oldY*Math.sin(dvx)+oldZ*Math.cos(dvx);
+      
+      // rotate about y
+      var oldX = this.x;
+      oldZ = this.z;
+      this.x = oldZ*Math.sin(dvy)+oldX*Math.cos(dvy);
+      this.z = oldZ*Math.cos(dvy)-oldX*Math.sin(dvy);
+      
+      // rotate about z
+      oldX = this.x;
+      oldY = this.y;
+      this.x = oldX*Math.cos(dvz)-oldY*Math.sin(dvz);
+      this.y = oldX*Math.sin(dvz)+oldY*Math.cos(dvz);    
+    }
+    
+    this.lineTo = function(point2, color)
+    {
+      env.c.save();
+      env.c.translate(env.origoX, env.origoY);
+      var zmax = 10;
+      var zdiff1 = (zmax+this.z)/zmax;
+      var zdiff2 = (zmax+point2.z)/zmax;
+      env.c.line(this.x*env.step*zdiff1, -this.y*env.step*zdiff1, point2.x*env.step*zdiff2, -point2.y*env.step*zdiff2, 1, color);
+      env.c.restore();    
+    }
+  }
+  
+  this.axes = function()
+  {
+    this.c.line(this.origoX, 0, this.origoX, this.c.height, 2, "black");
+    this.c.line(0, this.origoY, this.c.width, this.origoY, 2, "black");
+
+    for (var i = this.origoX; i <= (this.c.width - this.step); i+=this.step)
+      this.c.line(i, this.origoY-10, i, this.origoY+10, 1, "black");
+    for (var i = this.origoX; i >= this.step; i-=this.step)
+      this.c.line(i, this.origoY-10, i, this.origoY+10, 1, "black");
+
+    for (var i = this.origoY; i <= (this.c.height - this.step); i+=this.step)
+      this.c.line(this.origoX-10, i, this.origoX+10, i, 1, "black");
+    for (var i = this.origoY; i >= this.step; i-=this.step)
+      this.c.line(this.origoX-10, i, this.origoX+10, i, 1, "black");
+    
+    this.c.triangle(this.origoX-10, 10, this.origoX+10, 10, this.origoX, 0, "black");
+    this.c.text(this.origoX-20, 30, 20, "y", "black");
+    this.c.triangle(this.c.width-10, this.origoY-10, this.c.width-10, this.origoY+10, this.c.width, this.origoY, "black");
+    this.c.text(this.c.width-30, this.origoY+22, 20, "x", "black");
+  }
+  
+  this.unitCircle = function()
+  {
+    this.c.ring(this.origoX, this.origoY, 100, 1, "#333333");
+  }
+
+  this.arcDegrees = function(r, angle, width, color)
+  {
+    this.c.arc(this.origoX, this.origoY, r*this.step, angle, width, color);
+  }
+
+  this.angleDegrees = function(angle)
+  {
+    var radius = 30;
+    this.arcDegrees(radius, angle, 2, "#553333");
+  }
+
+  this.angleRadians = function(angle)
+  {
+    var radius = 30;
+    this.arcDegrees(radius, angle*(180/Math.PI), 2, "#553333");
+  }
+}
