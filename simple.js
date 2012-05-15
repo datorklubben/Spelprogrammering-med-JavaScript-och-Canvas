@@ -19,9 +19,6 @@ function prepareCanvas()
   canvas.style.height = window.innerHeight;
   totalWidth          = canvas.width;
   totalHeight         = canvas.height;
-  origoX              = totalWidth/2;
-  origoY              = totalHeight/2;
-  step                = totalHeight/6;
 }
 
 function init()
@@ -45,10 +42,12 @@ function init()
 
   var simplify = function()
   {
-    c = new RoboroCanvas('canvas');
-    k = new RoboroKeyboard();
-    
-    window.mouse = c.mouse;
+    c    = new RoboroCanvas('canvas');
+    k    = new RoboroKeyboard();
+    trig = new RoboroMath(totalWidth/2, totalHeight/2, totalHeight/6, c);
+    //    boatWorld = new RoboroOOWorld(c);
+
+    window.mouse    = c.mouse;
     window.keyboard = k;
     
     mathSimplifications = ["sin",
@@ -84,8 +83,12 @@ function init()
        "line",
        "stopUpdate"];
     
-    for (var i = functions.length; i >= 0; i--)
-      window[functions[i]] = new Function('c.'+ functions[i] +'.apply(c, arguments);');
+    var numberOfFunctions = functions.length;
+    
+    for (var i = 0; i < numberOfFunctions; i++)
+      window[functions[i]] = new Function('return c.'+ functions[i] +'.apply(c, arguments);');
+    
+    window.touchScreen = c.touchScreen;
     
     if (typeof(start) != "undefined") 
       start();
@@ -100,193 +103,208 @@ function init()
   loadScript("http://www.spelprogrammering.nu/advanced.js", simplify);
 }
 
-function drawPoint(x, y, color, label, size)
+function RoboroMath(origoX, origoY, step, canvas)
 {
-  var label = typeof(label) != 'undefined' ? label : "";
-  var size = typeof(size) != 'undefined' ? size : 20;
-  save();
-  translate(origoX, origoY);
-  circle(x*step, -y*step, size, color);
-  
-  var xOffset = x > 0 ? -4 : label.length*12+12;
-  var yOffset = y > 0 ? 0 : 24;
-  
-  text(x*step+3-xOffset, -y*step-3+yOffset, size, label, color);
+  this.origoX = origoX;
+  this.origoY = origoY;
+  this.step   = step;
+  this.c      = canvas;
 
-  restore();
-}
+  var env = this;
 
-function drawPolarPoint(v, r, color, label, size)
-{
-  var label = typeof(label) != 'undefined' ? label : "";
-  var size = typeof(size) != 'undefined' ? size : 20;
-  var x = r*cos(v); 
-  var y = r*sin(v); 
-  drawPoint(x, y, color, label, size);
-}
-
-function drawPolarLine(v1, r1, v2, r2, color)
-{
-  var x1 = r1*cos(v1); 
-  var y1 = r1*sin(v1); 
-  var x2 = r2*cos(v2); 
-  var y2 = r2*sin(v2); 
-
-  drawCartesianLine(x1, y1, x2, y2, color);
-}
-
-function drawCartesianLabel(x, y, size, label, color)
-{
-  save();
-  translate(origoX, origoY);
-  text(x*step, -y*step, size, label, color);
-  restore();
-}
- 
-function drawCartesianLine(x1, y1, x2, y2, color)
-{
-  save();
-  translate(origoX, origoY);
-  line(x1*step, -y1*step, x2*step, -y2*step, 2, color);
-  restore();    
-}
-
-function line3D(point1, point2, color)
-{
-  point1.lineTo(point2, color);
-}
-
-function point3D(x, y, z, color)
-{
-  this.x = x;
-  this.y = y;
-  this.z = z;
-  this.color = color;
-
-  this.draw = function()
+  this.point = function(x, y, color, label, size)
   {
-    save();
-    translate(origoX, origoY);
-    var zmax = 10;
-
-    var zdiff = (zmax+this.z)/zmax;
-
-    var size = this.z*2+2 > 1 ? this.z*2+2 : 1;
-
-    circle(this.x*step*zdiff, -this.y*step*zdiff, size, this.color);
+    var label = typeof(label) != 'undefined' ? label : "";
+    var size = typeof(size) != 'undefined' ? size : 20;
+    env.c.save();
+    env.c.translate(this.origoX, this.origoY);
+    env.c.circle(x*this.step, -y*this.step, size, color);
+    
+    var xOffset = x > 0 ? -4 : label.length*12+12;
+    var yOffset = y > 0 ? 0 : 24;
+    
+    env.c.text(x*this.step+3-xOffset, -y*this.step-3+yOffset, size, label, color);
+    
     restore();
   }
 
-  this.rotate = function(dvx, dvy, dvz)
+  this.polarPoint = function(v, r, color, label, size)
   {
-    // rotate about x
-    var oldY = this.y;
-    var oldZ = this.z;
-    this.y = oldY*cos(dvx)-oldZ*sin(dvx);
-    this.z = oldY*sin(dvx)+oldZ*cos(dvx);
-
-    // rotate about y
-    var oldX = this.x;
-    oldZ = this.z;
-    this.x = oldZ*sin(dvy)+oldX*cos(dvy);
-    this.z = oldZ*cos(dvy)-oldX*sin(dvy);
-
-    // rotate about z
-    oldX = this.x;
-    oldY = this.y;
-    this.x = oldX*cos(dvz)-oldY*sin(dvz);
-    this.y = oldX*sin(dvz)+oldY*cos(dvz);    
+    var label = typeof(label) != 'undefined' ? label : "";
+    var size = typeof(size) != 'undefined' ? size : 20;
+    var x = r*cos(v); 
+    var y = r*sin(v); 
+    point(x, y, color, label, size);
   }
 
-  this.lineTo = function(point2, color)
+  this.polarLine = function(v1, r1, v2, r2, color)
   {
-    save();
-    translate(origoX, origoY);
-    var zmax = 10;
-    var zdiff1 = (zmax+this.z)/zmax;
-    var zdiff2 = (zmax+point2.z)/zmax;
-    line(this.x*step*zdiff1, -this.y*step*zdiff1, point2.x*step*zdiff2, -point2.y*step*zdiff2, 1, color);
+    var x1 = r1*cos(v1); 
+    var y1 = r1*sin(v1); 
+    var x2 = r2*cos(v2); 
+    var y2 = r2*sin(v2); 
+    
+    cartesianLine(x1, y1, x2, y2, color);
+  }
+
+  this.cartesianLabel = function(x, y, size, label, color)
+  {
+    env.c.save();
+    env.c.translate(origoX, origoY);
+    env.c.text(x*this.step, -y*this.step, size, label, color);
+    restore();
+  }
+ 
+  this.cartesianLine = function(x1, y1, x2, y2, color)
+  {
+    env.c.save();
+    env.c.translate(origoX, origoY);
+    env.c.line(x1*this.step, -y1*this.step, x2*this.step, -y2*this.step, 2, color);
     restore();    
   }
-}
 
-function drawAxes()
-{
-  line(origoX, 0, origoX, totalHeight, 2, "black");
-  line(0, origoY, totalWidth, origoY, 2, "black");
-  for(i=-3;i<=3;i++)
-    line(origoX+(i*step), origoY-10, origoX+(i*step), origoY+10, 1, "black");
-  for(i=-2;i<=2;i++)
-    line(origoX-10, origoY+(i*step), origoX+10, origoY+(i*step), 1, "black");
-
-  triangle(origoX-10, 10, origoX+10, 10, origoX, 0, "black");
-  text(origoX-20, 30, 20, "y", "black");
-  triangle(totalWidth-10, origoY-10, totalWidth-10, origoY+10, totalWidth, origoY, "black");
-  text(totalWidth-30, origoY+22, 20, "x", "black");
-}
-
-function drawUnitCircle()
-{
-  ring(origoX, origoY, 100, 1, "#333333");
-}
-
-function drawArc(r, angle, width, color)
-{
-  arc(origoX, origoY, r*step, angle, width, color);
-}
-
-function drawAngleDegrees(angle)
-{
-  var radius = 30;
-  drawArc(radius, angle, 2, "#553333");
-}
-
-function drawAngleRadians(angle)
-{
-  var radius = 30;
-  drawArc(radius, angle*(180/Math.PI), 2, "#553333");
-}
-
-theBoats = [];
-
-function addBoat(boat)
-{
-  theBoats[theBoats.length] = boat;
-}
-
-function startOOWorld() 
-{
-  function worldUpdate()
+  this.line3D = function(point1, point2, color)
   {
-    drawWorld();
-    
-    for (i=0; i<theBoats.length; i++) 
-    {
-      if(theBoats[i].updatePosition)
-        theBoats[i].updatePosition();
-      if(theBoats[i].draw)
-        theBoats[i].draw();
-    }
-    
-    drawWorldAfter();
+    point1.lineTo(point2, color);
   }
   
-  setInterval(worldUpdate, 50);
+  this.Point3D = function(x, y, z, color)
+  {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.color = color;
+
+    this.draw = function()
+    {
+      env.c.save();
+      env.c.translate(origoX, origoY);
+      var zmax = 10;
+      var zdiff = (zmax+this.z)/zmax;      
+      var size = this.z+4 > 0 ? this.z+4+2 : 2;
+      
+      env.c.circle(this.x*env.step*zdiff, -this.y*env.step*zdiff, size, this.color);
+      restore();
+    }
+    
+    this.rotate = function(dvx, dvy, dvz)
+    {
+      // rotate about x
+      var oldY = this.y;
+      var oldZ = this.z;
+      this.y = oldY*cos(dvx)-oldZ*sin(dvx);
+      this.z = oldY*sin(dvx)+oldZ*cos(dvx);
+      
+      // rotate about y
+      var oldX = this.x;
+      oldZ = this.z;
+      this.x = oldZ*sin(dvy)+oldX*cos(dvy);
+      this.z = oldZ*cos(dvy)-oldX*sin(dvy);
+      
+      // rotate about z
+      oldX = this.x;
+      oldY = this.y;
+      this.x = oldX*cos(dvz)-oldY*sin(dvz);
+      this.y = oldX*sin(dvz)+oldY*cos(dvz);    
+    }
+    
+    this.lineTo = function(point2, color)
+    {
+      env.c.save();
+      env.c.translate(origoX, origoY);
+      var zmax = 10;
+      var zdiff1 = (zmax+this.z)/zmax;
+      var zdiff2 = (zmax+point2.z)/zmax;
+      env.c.line(this.x*env.step*zdiff1, -this.y*env.step*zdiff1, point2.x*env.step*zdiff2, -point2.y*env.step*zdiff2, 1, color);
+      restore();    
+    }
+  }
+  
+  this.axes = function()
+  {
+    env.c.line(origoX, 0, origoX, totalHeight, 2, "black");
+    env.c.line(0, origoY, totalWidth, origoY, 2, "black");
+
+    var yLines = Math.floor(totalHeight/this.step);
+    var xLines = Math.floor(totalWidth/this.step);
+
+    for(var i=-Math.floor(xLines/2);i<=Math.floor(xLines/2);i++)
+      env.c.line(origoX+(i*this.step), origoY-10, origoX+(i*this.step), origoY+10, 1, "black");
+    for(var i=-Math.floor(yLines/2);i<=Math.floor(yLines/2);i++)
+      env.c.line(origoX-10, origoY+(i*this.step), origoX+10, origoY+(i*this.step), 1, "black");
+    
+    triangle(origoX-10, 10, origoX+10, 10, origoX, 0, "black");
+    env.c.text(origoX-20, 30, 20, "y", "black");
+    triangle(totalWidth-10, origoY-10, totalWidth-10, origoY+10, totalWidth, origoY, "black");
+    env.c.text(totalWidth-30, origoY+22, 20, "x", "black");
+  }
+  
+  this.unitCircle = function()
+  {
+    env.c.ring(origoX, origoY, 100, 1, "#333333");
+  }
+
+  this.arcDegrees = function(r, angle, width, color)
+  {
+    env.c.arc(origoX, origoY, r*this.step, angle, width, color);
+  }
+
+  this.angleDegrees = function(angle)
+  {
+    var radius = 30;
+    arcDegrees(radius, angle, 2, "#553333");
+  }
+
+  this.angleRadians = function(angle)
+  {
+    var radius = 30;
+    arcDegrees(radius, angle*(180/Math.PI), 2, "#553333");
+  }
+}
+
+function RoboroOOWorld(canvas)
+{
+  this.canvas   = canvas;
+  this.theBoats = [];
+
+  var env = this;
+
+  this.addBoat = function(boat)
+  {
+    this.theBoats[this.theBoats.length] = boat;
+  }
+
+  this.worldUpdate = function()
+  {
+    this.drawWorld();
+    
+    for (i=0; i<this.theBoats.length; i++) 
+    {
+      if(this.theBoats[i].updatePosition)
+        this.theBoats[i].updatePosition();
+      if(this.theBoats[i].draw)
+        this.theBoats[i].draw();
+    }
+    
+    this.drawWorldAfter();
+  }
+  
+  setInterval(this.worldUpdate, 50);
   
   var blues = [
       "#99BBFF", "#6699FF", "#3366FF", "#0033CC"
   ];
   
-  var waveOffs = [0, 30, 60, 90];
+  var waveOffs   = [0, 30, 60, 90];
   var waveHeight = 100;
-  var stars = null;
+  var stars      = null;
   
-  function initStars() 
+  initStars = function() 
   {
-    stars = [];
+    env.stars = [];
     for (var i=0; i<50; i++) 
     {
-      stars.push({
+      env.stars.push({
         x: Math.random()*totalWidth,
         y: Math.random()*120,
         size: Math.random()*3
@@ -294,10 +312,10 @@ function startOOWorld()
     }
   }
   
-  function drawWorld() 
+  this.drawWorld = function() 
   {
-    if (!stars)
-      initStars();
+    if (!env.stars)
+      this.initStars();
     
     function wave(x) 
     {
@@ -306,33 +324,33 @@ function startOOWorld()
     
     function drawWaveblock(y, color, waveOff) 
     {
-      c.context2D.fillStyle = color;
-      c.context2D.beginPath();
+      env.canvas.context2D.fillStyle = color;
+      env.canvas.context2D.beginPath();
       
-      c.context2D.moveTo(0, y);
+      env.canvas.context2D.moveTo(0, y);
       for (var i=0; i<totalWidth; i++) 
       {
-        c.context2D.lineTo(i, y+wave((i+waveOff)/30)*50);
+        env.canvas.context2D.lineTo(i, y+wave((i+waveOff)/30)*50);
       }
-      c.context2D.lineTo(totalWidth, totalHeight);
-      c.context2D.lineTo(0, totalHeight);
-      c.context2D.closePath();
+      env.canvas.context2D.lineTo(totalWidth, totalHeight);
+      env.canvas.context2D.lineTo(0, totalHeight);
+      env.canvas.context2D.closePath();
       
-      c.context2D.fill();
+      env.canvas.context2D.fill();
     }
     
-    c.context2D.fillStyle = "#111";
-    c.context2D.fillRect(0, 0, totalWidth, totalHeight);
+    env.canvas.context2D.fillStyle = "#111";
+    env.canvas.context2D.fillRect(0, 0, totalWidth, totalHeight);
     
-    for (var i=0; i<stars.length; i++) 
+    for (var i=0; i<env.stars.length; i++) 
     {
-      var star = stars[i];
+      var star = env.stars[i];
       circle(star.x, star.y, star.size/2, "#FFF");
     }
         
-    for (var i=0; i<blues.length; i++) 
+    for (var i=0; i<env.blues.length; i++) 
     {
-      drawWaveblock(waveHeight + i*60, blues[i], waveOffs[i]);
+      drawWaveblock(env.waveHeight + i*60, env.blues[i], env.waveOffs[i]);
       waveOffs[i] += i+2;
     }
   }
@@ -342,24 +360,24 @@ function startOOWorld()
     var plankWidth = 40;
     
       /* Planks */
-    c.context2D.beginPath();
+    env.canvas.context2D.beginPath();
     for (var i=0; i<5; i++) 
     {
-      c.context2D.moveTo((i+1)*plankWidth, 100);
-      c.context2D.lineTo(i*plankWidth-1, totalHeight - 100);
-      c.context2D.lineTo((i-1)*plankWidth, totalHeight - 100);
-      c.context2D.lineTo(i*plankWidth+1, 100);
+      env.canvas.context2D.moveTo((i+1)*plankWidth, 100);
+      env.canvas.context2D.lineTo(i*plankWidth-1, totalHeight - 100);
+      env.canvas.context2D.lineTo((i-1)*plankWidth, totalHeight - 100);
+      env.canvas.context2D.lineTo(i*plankWidth+1, 100);
     }
-    c.context2D.closePath();
-    c.context2D.fillStyle = "#940";
-    c.context2D.fill();
+    env.canvas.context2D.closePath();
+    env.canvas.context2D.fillStyle = "#940";
+    env.canvas.context2D.fill();
     
       /* Island */
-    c.context2D.beginPath();
-    c.context2D.moveTo(totalWidth, 70);
-    c.context2D.quadraticCurveTo(totalWidth-70, totalHeight/2, totalWidth, totalHeight-50);
-    c.context2D.closePath();
-    c.context2D.fillStyle = "#C93";
-    c.context2D.fill();
+    env.canvas.context2D.beginPath();
+    env.canvas.context2D.moveTo(totalWidth, 70);
+    env.canvas.context2D.quadraticCurveTo(totalWidth-70, totalHeight/2, totalWidth, totalHeight-50);
+    env.canvas.context2D.closePath();
+    env.canvas.context2D.fillStyle = "#C93";
+    env.canvas.context2D.fill();
   }
 }

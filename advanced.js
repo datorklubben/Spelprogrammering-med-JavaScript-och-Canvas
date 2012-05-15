@@ -4,7 +4,24 @@ function RoboroKeyboard()
   
   this.names =
   {
-    38: "up"
+    38: "up",
+    40: "down",
+    37: "left",
+    39: "right",
+    16: "shift",
+    18: "alt",
+    17: "ctrl",
+    13: "enter",
+    48: "zero",
+    49: "one",
+    50: "two",
+    51: "three",
+    52: "four",
+    53: "five",
+    54: "six",
+    55: "seven",
+    56: "eight",
+    57: "nine"
   };
   
   for (var code in this.names)
@@ -14,12 +31,42 @@ function RoboroKeyboard()
   {
     if (env.names[event.keyCode] !== undefined)
       env[env.names[event.keyCode]] = true;
+    env[event.keyCode] = true;
   };
   
   document.onkeyup = function(event)
   {
     if (env.names[event.keyCode] !== undefined)
       env[env.names[event.keyCode]] = false;
+    env[event.keyCode] = false;
+  };
+}
+
+function RoboroSound()
+{
+  var sounds = {};
+
+  this.addSound = function(name, urls)
+  {
+    var element = document.createElement('audio');
+    element.preload = 'auto';
+    
+    urls.forEach(
+      function(url)
+      {
+        var source = document.createElement('source');
+        source.src = url;
+        element.appendChild(source);
+      }
+    );
+    
+    sounds[name] = element;
+  };
+
+  this.playSound = function(name)
+  {
+    sounds[name].currentTime = 0;
+    sounds[name].play();
   };
 }
 
@@ -85,6 +132,7 @@ function RoboroCanvas(id)
   document.addEventListener('touchstart', function(event)
   {
     env.mouse.left = true;
+    env.touchScreen.currentlyTouched = true;
   });
   
   document.addEventListener('touchend', function(event)
