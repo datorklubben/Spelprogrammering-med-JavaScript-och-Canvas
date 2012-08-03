@@ -93,6 +93,8 @@ function init()
       window[functions[i]] = new Function('return c.'+ functions[i] +'.apply(c, arguments);');
     
     window.touchScreen = c.touchScreen;
+
+    loadAndEvalScript()
     
     if (typeof(start) != "undefined") 
       start();
@@ -101,6 +103,20 @@ function init()
       {
         c.FPS = window.FPS;
         update();
+      }
+
+      // Find the script tag that included simple.js, and eval its body.
+      function loadAndEvalScript() {
+        var elems = document.getElementsByTagName('script')
+
+        for (var i=0; i<elems.length; i++) {
+          var el         = elems[i]
+            , globalEval = (1, eval)
+
+          if (el.src.match(/simple\.js$/)) {
+            globalEval(el.innerHTML)
+          }
+        }
       }
   };
   
