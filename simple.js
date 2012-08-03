@@ -1,44 +1,57 @@
 window.onload = init;
 
+// Loads the given URL as javascript, and runs the passed callback when
+// the script has loaded.
 function loadScript(url, callback)
 {
-  var head = document.getElementsByTagName('head')[0];
+  var head   = document.getElementsByTagName('head')[0];
   var script = document.createElement('script');
-  script.type = 'text/javascript';
-  script.src = url;
+  
+  script.type               = 'text/javascript';
+  script.src                = url;
   script.onreadystatechange = callback;
-  script.onload = callback;
+  script.onload             = callback;
+  
   head.appendChild(script);
 }
 
+// Prepares the global `canvas` to occupy the whole page.
 function prepareCanvas()
 {
   canvas.width        = window.innerWidth;
   canvas.height       = window.innerHeight;
   canvas.style.width  = window.innerWidth;
   canvas.style.height = window.innerHeight;
+  
   totalWidth          = canvas.width;
   totalHeight         = canvas.height;
 }
 
 function init()
 {
+  // Prepare the global `canvas`.
   canvas = document.createElement('canvas');
-  canvas.id = 'canvas';
+  
+  canvas.id             = 'canvas';
   canvas.style.position = 'absolute';
-  canvas.style.left = '0';
-  canvas.style.top = '0';
+  canvas.style.left     = '0';
+  canvas.style.top      = '0';
+  
   document.body.setAttribute("oncontextmenu", "return false");
   document.body.appendChild(canvas);
-  var head = document.getElementsByTagName('head')[0];
+  
+  // ???
+  var head    = document.getElementsByTagName('head')[0];
   var iOSMeta = document.createElement('meta');
-  iOSMeta.name = "apple-mobile-web-app-capable";
+
+  iOSMeta.name    = "apple-mobile-web-app-capable";
   iOSMeta.content = "yes";
   head.appendChild(iOSMeta);
-
-  FPS = 30;
+  
+  FPS            = 30;
   suppressErrors = false;
   
+  // Prepare the canvas
   prepareCanvas();
 
   var simplify = function()
@@ -47,28 +60,21 @@ function init()
     k    = new RoboroKeyboard();
     trig = new RoboroMath(totalWidth/2, totalHeight/2, totalHeight/6, c);
     //    boatWorld = new RoboroOOWorld(c);
-
+    
     window.mouse    = c.mouse;
     window.keyboard = k;
+
+    // Import some common things from `Math` to the global namespace.
+    importMethods(window, Math, ["sin", "cos", "tan", "asin", "acos", "atan",
+                                 "sqrt", "floor", "PI"], true)
     
-    mathSimplifications = ["sin",
-                           "cos",
-                           "tan",
-                           "asin",
-                           "acos",
-                           "atan",
-                           "sqrt",
-                           "floor",
-                           "PI"];
-    
-    for (i = 0; i < mathSimplifications.length; i++)
-      window[mathSimplifications[i].toLowerCase()] = Math[mathSimplifications[i]];
-    
+    // Also import a bunch of canvas-related functions from the special canvas
+    // that occupies the whole page into the global namespace.
     var functions =
-      ["circle", 
-       "rectangle", 
-       "triangle", 
-       "ring", 
+      ["circle",
+       "rectangle",
+       "triangle",
+       "ring",
        "arc",
        "text",
        "random",
@@ -87,26 +93,64 @@ function init()
        "line",
        "stopUpdate"];
     
-    var numberOfFunctions = functions.length;
-    
-    for (var i = 0; i < numberOfFunctions; i++)
-      window[functions[i]] = new Function('return c.'+ functions[i] +'.apply(c, arguments);');
+    importMethods(window, c, functions)
     
     window.touchScreen = c.touchScreen;
+
+    loadAndEvalScript()
     
-    if (typeof(start) != "undefined") 
+    // See if the special entry-points `start` and `update` are defined, and if
+    // so, make sure to either execute `start` or setup a timer that keeps
+    // running `update`.
+    if (typeof(start) != "undefined")
       start();
-    if (typeof(update) != "undefined") 
+    if (typeof(update) != "undefined")
       c.update = function()
       {
         c.FPS = window.FPS;
         update();
       }
+
+    // Imports the given methods from object `source` to object `target`, being
+    // attached to `target` and with their 'this' bound to `source`.
+    //    If `lowercaseNames` is true, then the names of the methods being added
+    // to `target` are transformed to lowercase.  If `source[name]` for a given
+    // name isn't a function, then it is just copied over.
+    function importMethods(target, source, methods, lowercaseNames)
+    {
+      methods.forEach(function(name)
+      {
+        var newName = (lowercaseNames ? name.toLowerCase() : name);
+
+        if (typeof source[name] == 'function')
+          target[newName] = source[name].bind(source);
+        else
+          target[newName] = source[name];
+      });
+
+      return target;
+    }
+
+    // Find the script tag that included simple.js, and eval its body.
+    function loadAndEvalScript()
+    {
+      var elems = document.getElementsByTagName('script')
+
+      for (var i=0; i<elems.length; i++)
+      {
+        var el         = elems[i];
+        var globalEval = (1, eval);
+
+        if (el.src.match(/simple\.js$/))
+          globalEval(el.innerHTML);
+      }
+    }
   };
   
   loadScript("http://www.spelprogrammering.nu/advanced.js", simplify);
 }
 
+// Try not to read anything below this line...
 function RoboroOOWorld(canvas)
 {
   this.canvas   = canvas;
@@ -192,7 +236,7 @@ function RoboroOOWorld(canvas)
       var star = env.stars[i];
       circle(star.x, star.y, star.size/2, "#FFF");
     }
-        
+    
     for (var i=0; i<env.blues.length; i++) 
     {
       drawWaveblock(env.waveHeight + i*60, env.blues[i], env.waveOffs[i]);
