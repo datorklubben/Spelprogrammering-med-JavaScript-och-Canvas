@@ -8,6 +8,7 @@ function RoboroKeyboard()
     40: "down",
     37: "left",
     39: "right",
+    32: "space",
     16: "shift",
     18: "alt",
     17: "ctrl",
@@ -181,13 +182,22 @@ function RoboroCanvas(id)
   this.canvas = canvas;
   
   this.update = function() {};
+  this.lastUpdate = new Date().getTime();
+  this.deltaT = this.FPS;
   
   this.runUpdate = function()
   {
     if (env.running)
     {
+      var interval = 1000/env.FPS;
+      var t = new Date().getTime();
+      var toNext = interval - (t % interval);
+
+      env.deltaT = t - env.lastUpdate;
+      env.lastUpdate = t;
+      
       env.update();
-      env.updateTimer = setTimeout(env.runUpdate, 1000/env.FPS);
+      env.updateTimer = setTimeout(env.runUpdate, toNext);
     }
   };
   
@@ -256,14 +266,17 @@ function RoboroCanvas(id)
   
   this.randomAlternative = function(list)
   {
-    return list[random(list.length)];
+    return list[env.random(list.length)];
   };
   
-  this.picture = function(x, y, file)
+  this.picture = function(x, y, file, width, height)
   {
     var img = new Image();
     img.src = file;
-    this.context2D.drawImage(img, x, y);
+    if ((typeof(width) != 'undefined') && (typeof(height) != 'undefined'))
+      this.context2D.drawImage(img, x, y, width, height);
+    else
+      this.context2D.drawImage(img, x, y);
   };
   
   this.clearScreen = function()
@@ -274,6 +287,11 @@ function RoboroCanvas(id)
   this.fill = function(color)
   {
     this.rectangle(0, 0, this.width, this.height, color);
+  };
+
+  this.color = function(red, green, blue)
+  {
+    return "rgb(" + red + "," + green + "," + blue + ")";
   };
 
   this.distance = function(x1, y1, x2, y2)
@@ -297,6 +315,11 @@ function RoboroCanvas(id)
   this.translate = function(x, y)
   {
     this.context2D.translate(x, y);
+  };
+  
+  this.scale = function(x, y)
+  {
+    this.context2D.scale(x, y);
   };
   
   this.rotate = function(degrees)
@@ -352,7 +375,7 @@ function RoboroMath(origoX, origoY, step, canvas)
     var size = typeof(size) != 'undefined' ? size : 20;
     var x = r*Math.cos(v); 
     var y = r*Math.sin(v); 
-    point(x, y, color, label, size);
+    this.point(x, y, color, label, size);
   }
 
   this.polarLine = function(v1, r1, v2, r2, color)

@@ -37,6 +37,7 @@ function init()
   head.appendChild(iOSMeta);
 
   FPS = 30;
+  suppressErrors = false;
   
   prepareCanvas();
 
@@ -57,6 +58,7 @@ function init()
                            "acos",
                            "atan",
                            "sqrt",
+                           "floor",
                            "PI"];
     
     for (i = 0; i < mathSimplifications.length; i++)
@@ -75,9 +77,11 @@ function init()
        "clearScreen",
        "fill",
        "distance",
+       "color",
        "save",
        "restore",
        "translate",
+       "scale",
        "rotate",
        "rotateRadians",
        "line",
