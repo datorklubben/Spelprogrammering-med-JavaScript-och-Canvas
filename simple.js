@@ -1,5 +1,18 @@
 window.onload = init;
 
+
+Function.prototype.bind || (Function.prototype.bind = function(thisObj/*, ...boundArgs*/)
+{
+  var fn        = this
+  var boundArgs = Array.prototype.slice.call(arguments, 1)
+
+  return function(/*...args*/)
+  {
+    var args = Array.prototype.slice.call(arguments)
+    return fn.apply(thisObj, boundArgs.concat(args))
+  }
+})
+
 // Loads the given URL as javascript, and runs the passed callback when
 // the script has loaded.
 function loadScript(url, callback)
