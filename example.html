@@ -1,7 +1,17 @@
 <script src="simple.js">
-function start()
-{
-  circle(100, 100, 20, 'red')
-  circle(100, 200, 30, 'blue')
-}
+  function start()
+  {
+    circle(130, 100, 550, "yellow");
+    rectangle(450, 0, 600, 400, "blue");
+    circle(200, 150, 70, "red");
+    triangle(300, 20, 180, 700, 600, 400, "green");
+    ring(400, 200, 100, 10, "gray");
+    line(20, 20, 1750, 900, 10, "brown");
+    arc(500, 500, 300, 70, 20, "pink");
+  }
+
+  function update()
+  {
+    circle(mouse.x, mouse.y, 30, "red");
+  }
 </script>
