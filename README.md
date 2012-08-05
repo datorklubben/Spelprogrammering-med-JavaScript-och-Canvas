@@ -6,8 +6,7 @@ Usage of simple.js:
 
 Create an html file containing this:
 
-    <script src="http://spelprogrammering.nu/simple.js"></script>
-    <script>
+    <script src="http://spelprogrammering.nu/simple.js">
       function start()
       {
         circle(130, 100, 550, "yellow");
