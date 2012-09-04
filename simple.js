@@ -188,26 +188,11 @@ function init()
         };
       }
     }
-
-//     function loadAndEvalScript()
-//     {
-//       var elems = document.getElementsByTagName('script')
-
-//       for (var i=0; i<elems.length; i++)
-//       {
-//         var el         = elems[i];
-//         var globalEval = (1, eval);
-
-//         if (el.src.match(/simple\.js$/))
-//           globalEval(el.innerHTML);
-//       }
-//     }
   };
   
   loadScript("http://www.spelprogrammering.nu/errorconsole.js", function() {
       loadScript("http://www.spelprogrammering.nu/advanced.js", simplify);
     });
-  //  loadScript("http://www.spelprogrammering.nu/advanced.js", simplify);
 }
 
 // Try not to read anything below this line...
