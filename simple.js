@@ -53,7 +53,7 @@ function init()
   document.body.setAttribute("oncontextmenu", "return false");
   document.body.appendChild(canvas);
   
-  // ???
+  // Hide the address bar on iPhone/iPad
   var head    = document.getElementsByTagName('head')[0];
   var iOSMeta = document.createElement('meta');
 
@@ -79,7 +79,7 @@ function init()
 
     // Import some common things from `Math` to the global namespace.
     importMethods(window, Math, ["sin", "cos", "tan", "asin", "acos", "atan",
-                                 "sqrt", "floor", "PI"], true)
+                                 "sqrt", "floor", "PI", "abs"], true)
     
     // Also import a bunch of canvas-related functions from the special canvas
     // that occupies the whole page into the global namespace.
@@ -152,15 +152,62 @@ function init()
       for (var i=0; i<elems.length; i++)
       {
         var el         = elems[i];
-        var globalEval = (1, eval);
+        var globalEval = wrapWithTryCatch(eval);
 
         if (el.src.match(/simple\.js$/))
           globalEval(el.innerHTML);
       }
+
+      // Patch global `start` or `update` with a try-catch that prints stuff to
+      // our custom error console.
+      if (window.start)
+        window.start = wrapWithTryCatch(window.start);
+
+      if (window.update)
+        window.update = wrapWithTryCatch(window.update);
+
+      function wrapWithTryCatch(fn)
+      {
+        return function(/*...args*/)
+        {
+          try
+          {
+            fn.apply(this, arguments);
+          }
+          catch (err)
+          {
+            console.log("Caught error! Do we have appendErrorToConsole?",
+                        Boolean(window.appendErrorToConsole));
+            // Append error, if errorconsole has loaded.
+            if (window.appendErrorToConsole)
+              appendErrorToConsole(err);
+
+            throw err; // re-throw the error so the browser's console can also
+                       // catch it.
+          }
+        };
+      }
     }
+
+//     function loadAndEvalScript()
+//     {
+//       var elems = document.getElementsByTagName('script')
+
+//       for (var i=0; i<elems.length; i++)
+//       {
+//         var el         = elems[i];
+//         var globalEval = (1, eval);
+
+//         if (el.src.match(/simple\.js$/))
+//           globalEval(el.innerHTML);
+//       }
+//     }
   };
   
-  loadScript("http://www.spelprogrammering.nu/advanced.js", simplify);
+  loadScript("http://www.spelprogrammering.nu/errorconsole.js", function() {
+      loadScript("http://www.spelprogrammering.nu/advanced.js", simplify);
+    });
+  //  loadScript("http://www.spelprogrammering.nu/advanced.js", simplify);
 }
 
 // Try not to read anything below this line...

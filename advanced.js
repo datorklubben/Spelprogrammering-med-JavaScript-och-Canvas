@@ -256,7 +256,9 @@ function RoboroCanvas(id)
   {
     this.context2D.font = size + "pt monospace";
     this.context2D.fillStyle = color;
+    this.context2D.strokeStyle = color;
     this.context2D.fillText(text, x, y);
+    this.context2D.strokeText(text, x, y);
   };
   
   this.random = function(max)
@@ -351,31 +353,39 @@ function RoboroMath(origoX, origoY, step, canvas)
   this.step   = step;
   this.c      = canvas;
 
+  this.yMax   = 3;
+  this.yMin   = -this.yMax;
+
+  this.xMax   = this.c.width/this.step/2;
+  this.xMin   = -this.xMax;
+
   var env = this;
 
-  this.point = function(x, y, color, label, size)
+  this.point = function(x, y, size, color, label)
   {
+    var size = typeof(size) != 'undefined' ? size : (this.step/30);
+    var color = typeof(color) != 'undefined' ? color : "black";
     var label = typeof(label) != 'undefined' ? label : "";
-    var size = typeof(size) != 'undefined' ? size : 20;
     env.c.save();
     env.c.translate(this.origoX, this.origoY);
     env.c.circle(x*this.step, -y*this.step, size, color);
     
-    var xOffset = x > 0 ? -4 : label.length*12+12;
-    var yOffset = y > 0 ? 0 : 24;
+    var xOffset = x > 0 ? -4 : label.length*12+32;
+    var yOffset = y > 0 ? 0 : 28;
     
-    env.c.text(x*this.step+3-xOffset, -y*this.step-3+yOffset, size, label, color);
+    env.c.text(x*this.step+3-xOffset, -y*this.step-3+yOffset, 20, label, color);
     
     env.c.restore();
   }
 
-  this.polarPoint = function(v, r, color, label, size)
+  this.polarPoint = function(v, r, size, color, label)
   {
+    var size = typeof(size) != 'undefined' ? size : (this.step/30);
+    var color = typeof(color) != 'undefined' ? color : "black";
     var label = typeof(label) != 'undefined' ? label : "";
-    var size = typeof(size) != 'undefined' ? size : 20;
     var x = r*Math.cos(v); 
     var y = r*Math.sin(v); 
-    this.point(x, y, color, label, size);
+    this.point(x, y, size, color, label);
   }
 
   this.polarLine = function(v1, r1, v2, r2, color)
@@ -385,28 +395,34 @@ function RoboroMath(origoX, origoY, step, canvas)
     var x2 = r2*Math.cos(v2); 
     var y2 = r2*Math.sin(v2); 
     
-    this.cartesianLine(x1, y1, x2, y2, color);
+    this.line(x1, y1, x2, y2, color);
   }
 
-  this.cartesianLabel = function(x, y, size, label, color)
+  this.text = function(x, y, size, label, color)
   {
+    var color = typeof(color) != 'undefined' ? color : "black";
+
     env.c.save();
     env.c.translate(this.origoX, this.origoY);
     env.c.text(x*this.step, -y*this.step, size, label, color);
     env.c.restore();
   }
  
-  this.cartesianLine = function(x1, y1, x2, y2, color)
+  this.line = function(x1, y1, x2, y2, color)
   {
+    var color = typeof(color) != 'undefined' ? color : "black";
+
     env.c.save();
     env.c.translate(this.origoX, this.origoY);
     env.c.line(x1*this.step, -y1*this.step, x2*this.step, -y2*this.step, 2, color);
     env.c.restore();    
   }
 
-  this.line3D = function(point1, point2, color)
+  this.line3D = function(point1, point2, color, thickness)
   {
-    point1.lineTo(point2, color);
+    var color = typeof(color) != 'undefined' ? color : "black";
+    var thickness = typeof(thickness) != 'undefined' ? thickness : 1;
+    point1.lineTo(point2, color, thickness);
   }
   
   this.Point3D = function(x, y, z, color)
@@ -449,31 +465,33 @@ function RoboroMath(origoX, origoY, step, canvas)
       this.y = oldX*Math.sin(dvz)+oldY*Math.cos(dvz);    
     }
     
-    this.lineTo = function(point2, color)
+    this.lineTo = function(point2, color, thickness)
     {
       env.c.save();
       env.c.translate(env.origoX, env.origoY);
       var zmax = 10;
       var zdiff1 = (zmax+this.z)/zmax;
       var zdiff2 = (zmax+point2.z)/zmax;
-      env.c.line(this.x*env.step*zdiff1, -this.y*env.step*zdiff1, point2.x*env.step*zdiff2, -point2.y*env.step*zdiff2, 1, color);
+      env.c.line(this.x*env.step*zdiff1, -this.y*env.step*zdiff1, point2.x*env.step*zdiff2, -point2.y*env.step*zdiff2, thickness, color);
       env.c.restore();    
     }
   }
   
   this.axes = function()
   {
+    var stepNoDecimals = Math.floor(this.step);
+
     this.c.line(this.origoX, 0, this.origoX, this.c.height, 2, "black");
     this.c.line(0, this.origoY, this.c.width, this.origoY, 2, "black");
 
-    for (var i = this.origoX; i <= (this.c.width - this.step); i+=this.step)
+    for (var i = this.origoX; i <= (this.c.width - stepNoDecimals); i+=stepNoDecimals)
       this.c.line(i, this.origoY-10, i, this.origoY+10, 1, "black");
-    for (var i = this.origoX; i >= this.step; i-=this.step)
+    for (var i = this.origoX; i >= stepNoDecimals; i-=stepNoDecimals)
       this.c.line(i, this.origoY-10, i, this.origoY+10, 1, "black");
 
-    for (var i = this.origoY; i <= (this.c.height - this.step); i+=this.step)
+    for (var i = this.origoY; i <= (this.c.height - stepNoDecimals); i+=stepNoDecimals)
       this.c.line(this.origoX-10, i, this.origoX+10, i, 1, "black");
-    for (var i = this.origoY; i >= this.step; i-=this.step)
+    for (var i = this.origoY; i >= stepNoDecimals; i-=stepNoDecimals)
       this.c.line(this.origoX-10, i, this.origoX+10, i, 1, "black");
     
     this.c.triangle(this.origoX-10, 10, this.origoX+10, 10, this.origoX, 0, "black");
@@ -492,15 +510,8 @@ function RoboroMath(origoX, origoY, step, canvas)
     this.c.arc(this.origoX, this.origoY, r*this.step, angle, width, color);
   }
 
-  this.angleDegrees = function(angle)
+  this.arcRadians = function(r, angle, width, color)
   {
-    var radius = 30;
-    this.arcDegrees(radius, angle, 2, "#553333");
-  }
-
-  this.angleRadians = function(angle)
-  {
-    var radius = 30;
-    this.arcDegrees(radius, angle*(180/Math.PI), 2, "#553333");
+    this.arcDegrees(r, angle*(180/Math.PI), width, color);
   }
 }
