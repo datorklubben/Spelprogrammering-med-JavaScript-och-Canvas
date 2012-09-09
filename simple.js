@@ -81,7 +81,6 @@ function init()
     c    = new RoboroCanvas('canvas');
     k    = new RoboroKeyboard();
     trig = new RoboroMath(totalWidth/2, totalHeight/2, totalHeight/6, c);
-    //    boatWorld = new RoboroOOWorld(c);
     
     window.mouse    = c.mouse;
     window.keyboard = k;
@@ -105,7 +104,7 @@ function init()
        "clearScreen",
        "fill",
        "distance",
-       "color",
+       "mixColor",
        "save",
        "restore",
        "translate",
@@ -201,127 +200,6 @@ function init()
   
   loadErrorConsole();
   loadScript("http://www.spelprogrammering.nu/advanced.js", simplify);
-}
-
-// Try not to read anything below this line...
-function RoboroOOWorld(canvas)
-{
-  this.canvas   = canvas;
-  this.theBoats = [];
-
-  var env = this;
-
-  this.addBoat = function(boat)
-  {
-    this.theBoats[this.theBoats.length] = boat;
-  }
-
-  this.worldUpdate = function()
-  {
-    this.drawWorld();
-    
-    for (i=0; i<this.theBoats.length; i++) 
-    {
-      if(this.theBoats[i].updatePosition)
-        this.theBoats[i].updatePosition();
-      if(this.theBoats[i].draw)
-        this.theBoats[i].draw();
-    }
-    
-    this.drawWorldAfter();
-  }
-  
-  setInterval(this.worldUpdate, 50);
-  
-  var blues = [
-      "#99BBFF", "#6699FF", "#3366FF", "#0033CC"
-  ];
-  
-  var waveOffs   = [0, 30, 60, 90];
-  var waveHeight = 100;
-  var stars      = null;
-  
-  initStars = function() 
-  {
-    env.stars = [];
-    for (var i=0; i<50; i++) 
-    {
-      env.stars.push({
-        x: Math.random()*totalWidth,
-        y: Math.random()*120,
-        size: Math.random()*3
-      });
-    }
-  }
-  
-  this.drawWorld = function() 
-  {
-    if (!env.stars)
-      this.initStars();
-    
-    function wave(x) 
-    {
-      return Math.abs(Math.sin(x)*(x%Math.PI/6));
-    }
-    
-    function drawWaveblock(y, color, waveOff) 
-    {
-      env.canvas.context2D.fillStyle = color;
-      env.canvas.context2D.beginPath();
-      
-      env.canvas.context2D.moveTo(0, y);
-      for (var i=0; i<totalWidth; i++) 
-      {
-        env.canvas.context2D.lineTo(i, y+wave((i+waveOff)/30)*50);
-      }
-      env.canvas.context2D.lineTo(totalWidth, totalHeight);
-      env.canvas.context2D.lineTo(0, totalHeight);
-      env.canvas.context2D.closePath();
-      
-      env.canvas.context2D.fill();
-    }
-    
-    env.canvas.context2D.fillStyle = "#111";
-    env.canvas.context2D.fillRect(0, 0, totalWidth, totalHeight);
-    
-    for (var i=0; i<env.stars.length; i++) 
-    {
-      var star = env.stars[i];
-      circle(star.x, star.y, star.size/2, "#FFF");
-    }
-    
-    for (var i=0; i<env.blues.length; i++) 
-    {
-      drawWaveblock(env.waveHeight + i*60, env.blues[i], env.waveOffs[i]);
-      waveOffs[i] += i+2;
-    }
-  }
-  
-  function drawWorldAfter() 
-  {
-    var plankWidth = 40;
-    
-      /* Planks */
-    env.canvas.context2D.beginPath();
-    for (var i=0; i<5; i++) 
-    {
-      env.canvas.context2D.moveTo((i+1)*plankWidth, 100);
-      env.canvas.context2D.lineTo(i*plankWidth-1, totalHeight - 100);
-      env.canvas.context2D.lineTo((i-1)*plankWidth, totalHeight - 100);
-      env.canvas.context2D.lineTo(i*plankWidth+1, 100);
-    }
-    env.canvas.context2D.closePath();
-    env.canvas.context2D.fillStyle = "#940";
-    env.canvas.context2D.fill();
-    
-      /* Island */
-    env.canvas.context2D.beginPath();
-    env.canvas.context2D.moveTo(totalWidth, 70);
-    env.canvas.context2D.quadraticCurveTo(totalWidth-70, totalHeight/2, totalWidth, totalHeight-50);
-    env.canvas.context2D.closePath();
-    env.canvas.context2D.fillStyle = "#C93";
-    env.canvas.context2D.fill();
-  }
 }
 
 function loadErrorConsole() {

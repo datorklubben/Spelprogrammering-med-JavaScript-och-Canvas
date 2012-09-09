@@ -185,6 +185,8 @@ function RoboroCanvas(id)
   };
   
   this.FPS = 30;
+  this.currentFillStyle = "red";
+  this.context2D.fillStyle = this.currentFillStyle;
   this.running = true;
   
   this.canvas = canvas;
@@ -227,7 +229,11 @@ function RoboroCanvas(id)
 
   this.rectangle = function(x, y, width, height, color) 
   {
-    this.context2D.fillStyle = color;
+    if (this.currentFillStyle != color)
+    {
+      this.context2D.fillStyle = color;
+      this.currentFillStyle = color;
+    }
     this.context2D.fillRect(x, y, width, height);
   };
   
@@ -299,7 +305,7 @@ function RoboroCanvas(id)
     this.rectangle(0, 0, this.width, this.height, color);
   };
 
-  this.color = function(red, green, blue)
+  this.mixColor = function(red, green, blue)
   {
     return "rgb(" + red + "," + green + "," + blue + ")";
   };
