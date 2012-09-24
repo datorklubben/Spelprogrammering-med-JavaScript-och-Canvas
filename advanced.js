@@ -30,7 +30,9 @@ function RoboroKeyboard()
     54: "six",
     55: "seven",
     56: "eight",
-    57: "nine"
+    57: "nine",
+    87: "w",
+    83: "s"
   };
   
   for (var code in this.names)
@@ -226,14 +228,16 @@ function RoboroCanvas(id)
     this.context2D.closePath();
     this.context2D.fill();
   };
-
+  
   this.rectangle = function(x, y, width, height, color) 
   {
-    if (this.currentFillStyle != color)
-    {
-      this.context2D.fillStyle = color;
-      this.currentFillStyle = color;
-    }
+    //if (this.currentFillStyle != color)
+    //{
+    //  this.context2D.fillStyle = color;
+    //  this.currentFillStyle = color;
+    //}
+    
+    this.context2D.fillStyle = color;
     this.context2D.fillRect(x, y, width, height);
   };
   
@@ -270,9 +274,9 @@ function RoboroCanvas(id)
   {
     this.context2D.font = size + "pt monospace";
     this.context2D.fillStyle = color;
-    this.context2D.strokeStyle = color;
+    //    this.context2D.strokeStyle = color;
     this.context2D.fillText(text, x, y);
-    this.context2D.strokeText(text, x, y);
+    //this.context2D.strokeText(text, x, y);
   };
   
   this.random = function(max)
@@ -318,6 +322,15 @@ function RoboroCanvas(id)
     return Math.sqrt(dx * dx + dy * dy);
   };
 
+  this.distance3D = function(x1, y1, z1, x2, y2, z2)
+  {
+    var dx = x1 - x2;
+    var dy = y1 - y2;
+    var dz = z1 - z2;
+  
+    return Math.sqrt(dx * dx + dy * dy + dz * dz);
+  };
+
   this.save = function()
   {
     this.context2D.save();
@@ -358,6 +371,13 @@ function RoboroCanvas(id)
     this.context2D.stroke();
     this.context2D.closePath();
   };
+
+  this.getPixel = function(x, y)
+  {
+    var data = this.context2D.getImageData(x, y, 1, 1).data;
+
+    return {red: data[0], green: data[1], blue: data[2]};
+  };
 }
 
 function RoboroMath(origoX, origoY, step, canvas)
@@ -366,6 +386,8 @@ function RoboroMath(origoX, origoY, step, canvas)
   this.origoY = origoY;
   this.step   = step;
   this.c      = canvas;
+
+  this.DDDPerspective = true;
 
   this.yMax   = 3;
   this.yMin   = -this.yMax;
@@ -438,6 +460,11 @@ function RoboroMath(origoX, origoY, step, canvas)
     var thickness = typeof(thickness) != 'undefined' ? thickness : 1;
     point1.lineTo(point2, color, thickness);
   }
+
+  this.distance3D = function(point1, point2)
+  {
+    return env.c.distance3D(point1.x, point1.y, point1.z, point2.x, point2.y, point2.z);
+  }
   
   this.Point3D = function(x, y, z, color)
   {
@@ -451,7 +478,7 @@ function RoboroMath(origoX, origoY, step, canvas)
       env.c.save();
       env.c.translate(env.origoX, env.origoY);
       var zmax = 10;
-      var zdiff = (zmax+this.z)/zmax;      
+      var zdiff = env.DDDPerspective ? (zmax+this.z)/zmax : 1;      
       var size = this.z+4 > 0 ? this.z+4+2 : 2;
       
       env.c.circle(this.x*env.step*zdiff, -this.y*env.step*zdiff, size, this.color);
@@ -484,8 +511,8 @@ function RoboroMath(origoX, origoY, step, canvas)
       env.c.save();
       env.c.translate(env.origoX, env.origoY);
       var zmax = 10;
-      var zdiff1 = (zmax+this.z)/zmax;
-      var zdiff2 = (zmax+point2.z)/zmax;
+      var zdiff1 = env.DDDPerspective ? (zmax+this.z)/zmax : 1;
+      var zdiff2 = env.DDDPerspective ? (zmax+point2.z)/zmax : 1;
       env.c.line(this.x*env.step*zdiff1, -this.y*env.step*zdiff1, point2.x*env.step*zdiff2, -point2.y*env.step*zdiff2, thickness, color);
       env.c.restore();    
     }
@@ -514,6 +541,18 @@ function RoboroMath(origoX, origoY, step, canvas)
     this.c.text(this.c.width-30, this.origoY+22, 20, "x", "black");
   }
   
+  this.axes3D = function()
+  {
+    this.axes();
+    this.c.line(this.origoX, this.origoY, this.origoX-(this.step/2), this.origoY+this.step, 1, "black");
+    this.c.line(this.origoX, this.origoY, this.origoX+(this.step/4), this.origoY-(this.step/2), 1, "black");
+    this.c.triangle(this.origoX-(this.step/2), this.origoY+this.step, 
+                    this.origoX-(this.step/2)-5, this.origoY+this.step-10,
+                    this.origoX-(this.step/2)+13, this.origoY+this.step-5,
+                    "black");
+    this.c.text(this.origoX-(this.step/2), this.origoY+this.step+20, 20, "z", "black");
+  }
+
   this.unitCircle = function()
   {
     this.c.ring(this.origoX, this.origoY, 100, 1, "#333333");

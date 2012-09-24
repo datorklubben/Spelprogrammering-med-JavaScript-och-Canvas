@@ -104,6 +104,7 @@ function init()
        "clearScreen",
        "fill",
        "distance",
+       "distance3D",
        "mixColor",
        "save",
        "restore",
@@ -112,11 +113,14 @@ function init()
        "rotate",
        "rotateRadians",
        "line",
+       "getPixel",
        "stopUpdate"];
     
     importMethods(window, c, functions)
     
     window.touchScreen = c.touchScreen;
+
+    window.hideMouse = function() { canvas.style.cursor = 'none'; }
 
     loadAndEvalScript()
     
