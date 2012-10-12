@@ -81,13 +81,14 @@ function init()
     c    = new RoboroCanvas('canvas');
     k    = new RoboroKeyboard();
     trig = new RoboroMath(totalWidth/2, totalHeight/2, totalHeight/6, c);
+    turtle = new RoboroTurtle(totalWidth/2, totalHeight/2, c);
     
     window.mouse    = c.mouse;
     window.keyboard = k;
 
     // Import some common things from `Math` to the global namespace.
     importMethods(window, Math, ["sin", "cos", "tan", "asin", "acos", "atan",
-                                 "sqrt", "floor", "PI", "abs"], true)
+                                 "sqrt", "floor", "PI", "abs", "pow"], true)
     
     // Also import a bunch of canvas-related functions from the special canvas
     // that occupies the whole page into the global namespace.

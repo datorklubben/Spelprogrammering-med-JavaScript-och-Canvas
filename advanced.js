@@ -111,6 +111,8 @@ function RoboroCanvas(id)
   
   window.addEventListener('mousedown', function(event)
   {
+    event.preventDefault();
+
     if (event.button == 0)
       env.mouse.left = true;
     else if (event.button == 1)
@@ -131,8 +133,22 @@ function RoboroCanvas(id)
   
   canvas.onmousemove = function(event)
   {
-    env.mouse.x = event.pageX - canvas.offsetLeft;
-    env.mouse.y = event.pageY - canvas.offsetTop;
+    var totalOffsetX = 0;
+    var totalOffsetY = 0;
+    var currentElement = canvas;
+
+    do{
+      totalOffsetX += currentElement.offsetLeft - currentElement.scrollLeft;
+      totalOffsetY += currentElement.offsetTop - currentElement.scrollTop;
+    }
+    while(currentElement = currentElement.offsetParent);
+
+    env.mouse.x = event.pageX - totalOffsetX;
+    env.mouse.y = event.pageY - totalOffsetY;
+    
+
+    /*        env.mouse.x = event.pageX - canvas.offsetLeft;
+          env.mouse.y = event.pageY - canvas.offsetTop;*/
   };
 
   canvas.onmouseout = function(event)
@@ -151,6 +167,10 @@ function RoboroCanvas(id)
     if (event.touches.length == 0)
     {
       env.mouse.left = false;
+
+      env.mouse.x = -10000;
+      env.mouse.y = -10000;
+
       env.touchScreen.currentlyTouched = false;
     }
   });
@@ -168,21 +188,35 @@ function RoboroCanvas(id)
       {
         if (event.changedTouches[i].identifier == event.touches[u].identifier)
         {
-          event.touches[u].clientX = -100000;
-          event.touches[u].clientY = -100000;
+          event.touches[u].clientX = -10000;
+          event.touches[u].clientY = -10000;
         }
       }
     }
-    
+
     env.touchScreen.points = event.touches;
   }
   
-  canvas.ontouchmove = function(e)
+  canvas.ontouchmove = function(event)
   {
     event.preventDefault();
     
+    var totalOffsetX = 0;
+    var totalOffsetY = 0;
+    var currentElement = canvas;
+
+    do{
+      totalOffsetX += currentElement.offsetLeft - currentElement.scrollLeft;
+      totalOffsetY += currentElement.offsetTop - currentElement.scrollTop;
+    }
+    while(currentElement = currentElement.offsetParent);
+
+    env.mouse.x = event.touches[0].clientX - totalOffsetX;
+    env.mouse.y = event.touches[0].clientY - totalOffsetY;
+
+    /*
     env.mouse.x = event.touches[0].clientX - canvas.offsetLeft;
-    env.mouse.y = event.touches[0].clientY - canvas.offsetTop;
+    env.mouse.y = event.touches[0].clientY - canvas.offsetTop;*/
     env.touchScreen.points = event.touches;
   };
   
@@ -444,13 +478,14 @@ function RoboroMath(origoX, origoY, step, canvas)
     env.c.restore();
   }
  
-  this.line = function(x1, y1, x2, y2, color)
+  this.line = function(x1, y1, x2, y2, color, thickness)
   {
     var color = typeof(color) != 'undefined' ? color : "black";
+    var thickness = typeof(thickness) != 'undefined' ? thickness : 2;
 
     env.c.save();
     env.c.translate(this.origoX, this.origoY);
-    env.c.line(x1*this.step, -y1*this.step, x2*this.step, -y2*this.step, 2, color);
+    env.c.line(x1*this.step, -y1*this.step, x2*this.step, -y2*this.step, thickness, color);
     env.c.restore();    
   }
 
@@ -555,7 +590,7 @@ function RoboroMath(origoX, origoY, step, canvas)
 
   this.unitCircle = function()
   {
-    this.c.ring(this.origoX, this.origoY, 100, 1, "#333333");
+    this.c.ring(this.origoX, this.origoY, this.step, 1, "#333333");
   }
 
   this.arcDegrees = function(r, angle, width, color)
@@ -568,3 +603,53 @@ function RoboroMath(origoX, origoY, step, canvas)
     this.arcDegrees(r, angle*(180/Math.PI), width, color);
   }
 }
+
+function RoboroTurtle(startX, startY, canvas)
+{
+  this.x = startX;
+  this.y = startY;
+  this.c = canvas;
+  this.width = 1;
+  this.color = "black";
+  this.isDrawing = true;
+  this.direction = 0;
+  this.positionStack = new Array();
+  
+  this.penDown = function() { this.isDrawing = true; };
+  this.penUp   = function() { this.isDrawing = false; };
+
+  this.move = function(steps) 
+  {
+    var targetX = this.x + Math.cos(-this.direction*(Math.PI/180))*steps;
+    var targetY = this.y + Math.sin(-this.direction*(Math.PI/180))*steps;
+    if (this.isDrawing)
+      this.c.line(this.x, this.y, targetX, targetY, this.width, this.color);
+    this.x = targetX;
+    this.y = targetY;
+  };
+  
+  this.rotate    = function(angle) { this.direction += angle; };
+  this.turnLeft  = function(angle) { this.direction += angle; };
+  this.turnRight = function(angle) { this.direction -= angle; };
+  
+  this.pushPosition = function() 
+  { 
+    this.positionStack.push({x: this.x, 
+                             y: this.y, 
+                             direction: this.direction,
+                             color: this.color,
+                             width: this.width}) 
+  };
+
+  this.popPosition = function() 
+  { 
+    var oldState = this.positionStack.pop();
+
+    this.x         = oldState['x'];
+    this.y         = oldState['y'];
+    this.color     = oldState['color'];
+    this.width     = oldState['width'];
+    this.direction = oldState['direction'];
+  };
+}
+
