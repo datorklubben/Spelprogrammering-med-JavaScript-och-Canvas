@@ -1,14 +1,30 @@
 // Copyright (c) 2012 Pontus Walck, Mikael Tylmad
 // 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+// Permission is hereby granted, free of charge, to any person
+// obtaining a copy of this software and associated documentation
+// files (the "Software"), to deal in the Software without
+// restriction, including without limitation the rights to use, copy,
+// modify, merge, publish, distribute, sublicense, and/or sell copies
+// of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 // 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
 // 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+// BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+// ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 function RoboroKeyboard()
 {
   var env = this;
+
+  this.verbose = false;
   
   this.names =
   {
@@ -31,8 +47,32 @@ function RoboroKeyboard()
     55: "seven",
     56: "eight",
     57: "nine",
+    65: "a",
+    66: "b",
+    67: "c",
+    68: "d",
+    69: "e",
+    70: "f",
+    71: "g",
+    72: "h",
+    73: "i",
+    74: "j",
+    75: "k",
+    76: "l",
+    77: "m",
+    78: "n",
+    79: "o",
+    80: "p",
+    81: "q",
+    82: "r",
+    83: "s",
+    84: "t",
+    85: "u",
+    86: "v",
     87: "w",
-    83: "s"
+    88: "x",
+    89: "y",
+    90: "z"
   };
   
   for (var code in this.names)
@@ -43,6 +83,9 @@ function RoboroKeyboard()
     if (env.names[event.keyCode] !== undefined)
       env[env.names[event.keyCode]] = true;
     env[event.keyCode] = true;
+
+    if (env.verbose)
+      alert(event.keyCode);
   };
   
   document.onkeyup = function(event)
@@ -103,7 +146,7 @@ function RoboroCanvas(id)
     middle: false
   };
   
-  this.touchScreen =
+  this.touchscreen =
   {
     points: [],
     currentlyTouched: false
@@ -145,10 +188,6 @@ function RoboroCanvas(id)
 
     env.mouse.x = event.pageX - totalOffsetX;
     env.mouse.y = event.pageY - totalOffsetY;
-    
-
-    /*        env.mouse.x = event.pageX - canvas.offsetLeft;
-          env.mouse.y = event.pageY - canvas.offsetTop;*/
   };
 
   canvas.onmouseout = function(event)
@@ -159,7 +198,7 @@ function RoboroCanvas(id)
   document.addEventListener('touchstart', function(event)
   {
     env.mouse.left = true;
-    env.touchScreen.currentlyTouched = true;
+    env.touchscreen.currentlyTouched = true;
   });
   
   document.addEventListener('touchend', function(event)
@@ -171,13 +210,13 @@ function RoboroCanvas(id)
       env.mouse.x = -10000;
       env.mouse.y = -10000;
 
-      env.touchScreen.currentlyTouched = false;
+      env.touchscreen.currentlyTouched = false;
     }
   });
   
   canvas.ontouchstart = function(event)
   {
-    env.touchScreen.points = event.touches;
+    env.touchscreen.points = event.touches;
   };
   
   canvas.ontouchend = function(event)
@@ -194,7 +233,7 @@ function RoboroCanvas(id)
       }
     }
 
-    env.touchScreen.points = event.touches;
+    env.touchscreen.points = event.touches;
   }
   
   canvas.ontouchmove = function(event)
@@ -214,10 +253,7 @@ function RoboroCanvas(id)
     env.mouse.x = event.touches[0].clientX - totalOffsetX;
     env.mouse.y = event.touches[0].clientY - totalOffsetY;
 
-    /*
-    env.mouse.x = event.touches[0].clientX - canvas.offsetLeft;
-    env.mouse.y = event.touches[0].clientY - canvas.offsetTop;*/
-    env.touchScreen.points = event.touches;
+    env.touchscreen.points = event.touches;
   };
   
   this.FPS = 30;
@@ -265,12 +301,6 @@ function RoboroCanvas(id)
   
   this.rectangle = function(x, y, width, height, color) 
   {
-    //if (this.currentFillStyle != color)
-    //{
-    //  this.context2D.fillStyle = color;
-    //  this.currentFillStyle = color;
-    //}
-    
     this.context2D.fillStyle = color;
     this.context2D.fillRect(x, y, width, height);
   };
@@ -308,9 +338,7 @@ function RoboroCanvas(id)
   {
     this.context2D.font = size + "pt monospace";
     this.context2D.fillStyle = color;
-    //    this.context2D.strokeStyle = color;
     this.context2D.fillText(text, x, y);
-    //this.context2D.strokeText(text, x, y);
   };
   
   this.random = function(max)
@@ -628,6 +656,23 @@ function RoboroTurtle(startX, startY, canvas)
     this.y = targetY;
   };
   
+  this.moveWithPen = function(steps) 
+  {
+    var targetX = this.x + Math.cos(-this.direction*(Math.PI/180))*steps;
+    var targetY = this.y + Math.sin(-this.direction*(Math.PI/180))*steps;
+    this.c.line(this.x, this.y, targetX, targetY, this.width, this.color);
+    this.x = targetX;
+    this.y = targetY;
+  };
+
+  this.moveWithoutPen = function(steps) 
+  {
+    var targetX = this.x + Math.cos(-this.direction*(Math.PI/180))*steps;
+    var targetY = this.y + Math.sin(-this.direction*(Math.PI/180))*steps;
+    this.x = targetX;
+    this.y = targetY;
+  };
+
   this.rotate    = function(angle) { this.direction += angle; };
   this.turnLeft  = function(angle) { this.direction += angle; };
   this.turnRight = function(angle) { this.direction -= angle; };

@@ -119,7 +119,7 @@ function init()
     
     importMethods(window, c, functions)
     
-    window.touchScreen = c.touchScreen;
+    window.touchscreen = c.touchscreen;
 
     window.hideMouse = function() { canvas.style.cursor = 'none'; }
 
