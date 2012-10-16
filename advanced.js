@@ -216,11 +216,38 @@ function RoboroCanvas(id)
   
   canvas.ontouchstart = function(event)
   {
+    var totalOffsetX = 0;
+    var totalOffsetY = 0;
+    var currentElement = canvas;
+
+    do{
+      totalOffsetX += currentElement.offsetLeft - currentElement.scrollLeft;
+      totalOffsetY += currentElement.offsetTop - currentElement.scrollTop;
+    }
+    while(currentElement = currentElement.offsetParent);
+
     env.touchscreen.points = event.touches;
+
+    for (var i = 0; i < event.touches.length; i++)
+    {
+      env.touchscreen.points[i].x  = event.touches[i].clientX - totalOffsetX;
+      env.touchscreen.points[i].y  = event.touches[i].clientY - totalOffsetY;
+      env.touchscreen.points[i].id = env.touchscreen.points[i].identifier;
+    }
   };
   
   canvas.ontouchend = function(event)
   {
+    var totalOffsetX = 0;
+    var totalOffsetY = 0;
+    var currentElement = canvas;
+
+    do{
+      totalOffsetX += currentElement.offsetLeft - currentElement.scrollLeft;
+      totalOffsetY += currentElement.offsetTop - currentElement.scrollTop;
+    }
+    while(currentElement = currentElement.offsetParent);
+
     for (var u = 0; u < event.touches.length; u++)
     {
       for (var i = 0; i < event.changedTouches.length; i++)
@@ -234,6 +261,13 @@ function RoboroCanvas(id)
     }
 
     env.touchscreen.points = event.touches;
+
+    for (var i = 0; i < event.touches.length; i++)
+    {
+      env.touchscreen.points[i].x  = event.touches[i].clientX - totalOffsetX;
+      env.touchscreen.points[i].y  = event.touches[i].clientY - totalOffsetY;
+      env.touchscreen.points[i].id = env.touchscreen.points[i].identifier;
+    }
   }
   
   canvas.ontouchmove = function(event)
@@ -254,24 +288,29 @@ function RoboroCanvas(id)
     env.mouse.y = event.touches[0].clientY - totalOffsetY;
 
     env.touchscreen.points = event.touches;
+
+    for (var i = 0; i < event.touches.length; i++)
+    {
+      env.touchscreen.points[i].x  = event.touches[i].clientX - totalOffsetX;
+      env.touchscreen.points[i].y  = event.touches[i].clientY - totalOffsetY;
+      env.touchscreen.points[i].id = env.touchscreen.points[i].identifier;
+    }
+
   };
   
-  this.FPS = 30;
-  this.currentFillStyle = "red";
-  this.context2D.fillStyle = this.currentFillStyle;
-  this.running = true;
-  
   this.canvas = canvas;
-  
-  this.update = function() {};
-  this.lastUpdate = new Date().getTime();
-  this.deltaT = this.FPS;
+
+  this.updatesPerSecond = 30;
+  this.running          = true;
+  this.update           = function() {};
+  this.lastUpdate       = new Date().getTime();
+  this.deltaT           = this.updatesPerSecond;
   
   this.runUpdate = function()
   {
     if (env.running)
     {
-      var interval = 1000/env.FPS;
+      var interval = 1000/env.updatesPerSecond;
       var t = new Date().getTime();
       var toNext = interval - (t % interval);
 
@@ -283,7 +322,7 @@ function RoboroCanvas(id)
     }
   };
   
-  this.updateTimer = setTimeout(this.runUpdate, 1000/this.FPS);
+  this.updateTimer = setTimeout(this.runUpdate, 1000/this.updatesPerSecond);
   
   this.stopUpdate = function()
   {

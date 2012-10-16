@@ -70,8 +70,9 @@ function init()
   iOSMeta.content = "yes";
   head.appendChild(iOSMeta);
   
-  FPS            = 30;
-  suppressErrors = false;
+  FPS              = 30;
+  updatesPerSecond = 30;
+  suppressErrors   = false;
   
   // Prepare the canvas
   prepareCanvas();
@@ -80,7 +81,8 @@ function init()
   {
     c    = new RoboroCanvas('canvas');
     k    = new RoboroKeyboard();
-    trig = new RoboroMath(totalWidth/2, totalHeight/2, totalHeight/6, c);
+    math = new RoboroMath(totalWidth/2, totalHeight/2, totalHeight/6, c);
+    trig = math;
     turtle = new RoboroTurtle(totalWidth/2, totalHeight/2, c);
     
     window.mouse    = c.mouse;
@@ -133,7 +135,7 @@ function init()
     if (typeof(update) != "undefined")
       c.update = function()
       {
-        c.FPS = window.FPS;
+        c.FPS = window.updatesPerSecond;
         update();
       }
 
