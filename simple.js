@@ -70,7 +70,6 @@ function init()
   iOSMeta.content = "yes";
   head.appendChild(iOSMeta);
   
-  FPS              = 30;
   updatesPerSecond = 30;
   suppressErrors   = false;
   
@@ -135,7 +134,7 @@ function init()
     if (typeof(update) != "undefined")
       c.update = function()
       {
-        c.FPS = window.updatesPerSecond;
+        c.updatesPerSecond = window.updatesPerSecond;
         update();
       }
 

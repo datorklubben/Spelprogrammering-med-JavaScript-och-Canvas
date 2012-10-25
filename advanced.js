@@ -154,7 +154,8 @@ function RoboroCanvas(id)
   
   window.addEventListener('mousedown', function(event)
   {
-    event.preventDefault();
+    if (env.preventMouseDefaults)
+      event.preventDefault();
 
     if (event.button == 0)
       env.mouse.left = true;
@@ -300,11 +301,12 @@ function RoboroCanvas(id)
   
   this.canvas = canvas;
 
-  this.updatesPerSecond = 30;
-  this.running          = true;
-  this.update           = function() {};
-  this.lastUpdate       = new Date().getTime();
-  this.deltaT           = this.updatesPerSecond;
+  this.updatesPerSecond     = 30;
+  this.running              = true;
+  this.update               = function() {};
+  this.lastUpdate           = new Date().getTime();
+  this.deltaT               = this.updatesPerSecond;
+  this.preventMouseDefaults = false;
   
   this.runUpdate = function()
   {
