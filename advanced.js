@@ -485,20 +485,20 @@ function RoboroCanvas(id)
 
 function RoboroMath(origoX, origoY, step, canvas)
 {
+  var env = this;
+
   this.origoX = origoX;
   this.origoY = origoY;
   this.step   = step;
   this.c      = canvas;
 
-  this.DDDPerspective = true;
-
   this.yMax   = 3;
   this.yMin   = -this.yMax;
-
   this.xMax   = this.c.width/this.step/2;
   this.xMin   = -this.xMax;
 
-  var env = this;
+  this.DDDPerspective  = true;
+  this.DDDAxesRotation = {dx:0, dy:0, dz:0};
 
   this.point = function(x, y, size, color, label)
   {
@@ -645,16 +645,60 @@ function RoboroMath(origoX, origoY, step, canvas)
     this.c.text(this.c.width-30, this.origoY+22, 20, "x", "black");
   }
   
+  this.rotate3DAxes = function(dx, dy, dz)
+  {
+    this.DDDAxesRotation.dx += dx;
+    this.DDDAxesRotation.dy += dy;
+    this.DDDAxesRotation.dz += dz;
+  }
+
   this.axes3D = function()
   {
-    this.axes();
-    this.c.line(this.origoX, this.origoY, this.origoX-(this.step/2), this.origoY+this.step, 1, "black");
-    this.c.line(this.origoX, this.origoY, this.origoX+(this.step/4), this.origoY-(this.step/2), 1, "black");
-    this.c.triangle(this.origoX-(this.step/2), this.origoY+this.step, 
-                    this.origoX-(this.step/2)-5, this.origoY+this.step-10,
-                    this.origoX-(this.step/2)+13, this.origoY+this.step-5,
-                    "black");
-    this.c.text(this.origoX-(this.step/2), this.origoY+this.step+20, 20, "z", "black");
+    with (this)
+    {
+      var rightExtreme  = new Point3D(3, 0, 0);
+      var rightExtreme2 = new Point3D(2.9, 0, 0);
+      var leftExtreme   = new Point3D(-3, 0, 0);
+      var topExtreme    = new Point3D(0, 3, 0);
+      var topExtreme2   = new Point3D(0, 2.9, 0);
+      var bottomExtreme = new Point3D(0, -3, 0);
+      var backExtreme   = new Point3D(0, 0, -3);
+      var frontExtreme  = new Point3D(0, 0, 3);
+      var frontExtreme2 = new Point3D(0, 0, 2.9);
+      
+      var topArrow1   = new Point3D(0.1, 2.9, 0);
+      var topArrow2   = new Point3D(-0.1, 2.9, 0);
+      var rightArrow1 = new Point3D(2.9, 0.1, 0);
+      var rightArrow2 = new Point3D(2.9, -0.1, 0);
+      var frontArrow1 = new Point3D(0.1, 0, 2.9);
+      var frontArrow2 = new Point3D(-0.1, 0, 2.9);
+      
+      var axes = [rightExtreme, leftExtreme, rightExtreme2,
+                  topExtreme, bottomExtreme, topExtreme2, 
+                  backExtreme, frontExtreme, frontExtreme2,
+                  topArrow1, topArrow2, 
+                  rightArrow1, rightArrow2,
+                  frontArrow1, frontArrow2];
+      
+      for (index in axes) 
+        axes[index].rotate(DDDAxesRotation.dx,
+                           DDDAxesRotation.dy,
+                           DDDAxesRotation.dz); 
+
+      line3D(rightExtreme2, leftExtreme,   "black", 2);
+      line3D(backExtreme,  frontExtreme2,  "black", 2);
+      line3D(topExtreme2,   bottomExtreme, "black", 2);
+      line3D(topExtreme,   topArrow1,     "black", 2);
+      line3D(topExtreme,   topArrow2,     "black", 2);
+      line3D(rightExtreme,   rightArrow1,     "black", 2);
+      line3D(rightExtreme,   rightArrow2,     "black", 2);
+      line3D(frontExtreme,   frontArrow1,     "black", 2);
+      line3D(frontExtreme,   frontArrow2,     "black", 2);
+      line3D(frontArrow1,   frontArrow2,     "black", 2);
+      line3D(rightArrow1,   rightArrow2,     "black", 2);
+      line3D(topArrow1,   topArrow2,     "black", 2);
+    }
+
   }
 
   this.unitCircle = function()
