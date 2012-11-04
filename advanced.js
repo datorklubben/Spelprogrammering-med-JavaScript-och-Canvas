@@ -672,13 +672,49 @@ function RoboroMath(origoX, origoY, step, canvas)
       var rightArrow2 = new Point3D(2.9, -0.1, 0);
       var frontArrow1 = new Point3D(0.1, 0, 2.9);
       var frontArrow2 = new Point3D(-0.1, 0, 2.9);
+
+      var xone1 = new Point3D(1, 0.1, 0);
+      var xone2 = new Point3D(1, -0.1, 0);
+      var xtwo1 = new Point3D(2, 0.1, 0);
+      var xtwo2 = new Point3D(2, -0.1, 0);
+
+      var xmone1 = new Point3D(-1, 0.1, 0);
+      var xmone2 = new Point3D(-1, -0.1, 0);
+      var xmtwo1 = new Point3D(-2, 0.1, 0);
+      var xmtwo2 = new Point3D(-2, -0.1, 0);
+
+      var yone1  = new Point3D(0.1,  1, 0);
+      var yone2  = new Point3D(-0.1, 1, 0);
+      var ytwo1  = new Point3D(0.1,  2, 0);
+      var ytwo2  = new Point3D(-0.1, 2, 0);
+
+      var ymone1  = new Point3D(0.1,  -1, 0);
+      var ymone2  = new Point3D(-0.1, -1, 0);
+      var ymtwo1  = new Point3D(0.1,  -2, 0);
+      var ymtwo2  = new Point3D(-0.1, -2, 0);
+
+      var zone1  = new Point3D(0.1,  0, 1);
+      var zone2  = new Point3D(-0.1, 0, 1);
+      var ztwo1  = new Point3D(0.1,  0, 2);
+      var ztwo2  = new Point3D(-0.1, 0, 2);
+
+      var zmone1  = new Point3D(0.1,  0, -1);
+      var zmone2  = new Point3D(-0.1, 0, -1);
+      var zmtwo1  = new Point3D(0.1,  0, -2);
+      var zmtwo2  = new Point3D(-0.1, 0, -2);
       
       var axes = [rightExtreme, leftExtreme, rightExtreme2,
                   topExtreme, bottomExtreme, topExtreme2, 
                   backExtreme, frontExtreme, frontExtreme2,
                   topArrow1, topArrow2, 
                   rightArrow1, rightArrow2,
-                  frontArrow1, frontArrow2];
+                  frontArrow1, frontArrow2,
+                  xone1, xone2, xtwo1, xtwo2,
+                  xmone1, xmone2, xmtwo1, xmtwo2,
+                  yone1, yone2, ytwo1, ytwo2,
+                  ymone1, ymone2, ymtwo1, ymtwo2,
+                  zone1, zone2, ztwo1, ztwo2,
+                  zmone1, zmone2, zmtwo1, zmtwo2];
       
       for (index in axes) 
         axes[index].rotate(DDDAxesRotation.dx,
@@ -686,17 +722,32 @@ function RoboroMath(origoX, origoY, step, canvas)
                            DDDAxesRotation.dz); 
 
       line3D(rightExtreme2, leftExtreme,   "black", 2);
-      line3D(backExtreme,  frontExtreme2,  "black", 2);
+      line3D(backExtreme,   frontExtreme2, "black", 2);
       line3D(topExtreme2,   bottomExtreme, "black", 2);
-      line3D(topExtreme,   topArrow1,     "black", 2);
-      line3D(topExtreme,   topArrow2,     "black", 2);
-      line3D(rightExtreme,   rightArrow1,     "black", 2);
-      line3D(rightExtreme,   rightArrow2,     "black", 2);
-      line3D(frontExtreme,   frontArrow1,     "black", 2);
-      line3D(frontExtreme,   frontArrow2,     "black", 2);
-      line3D(frontArrow1,   frontArrow2,     "black", 2);
-      line3D(rightArrow1,   rightArrow2,     "black", 2);
-      line3D(topArrow1,   topArrow2,     "black", 2);
+      line3D(topExtreme,    topArrow1,     "black", 2);
+      line3D(topExtreme,    topArrow2,     "black", 2);
+      line3D(rightExtreme,  rightArrow1,   "black", 2);
+      line3D(rightExtreme,  rightArrow2,   "black", 2);
+      line3D(frontExtreme,  frontArrow1,   "black", 2);
+      line3D(frontExtreme,  frontArrow2,   "black", 2);
+      line3D(frontArrow1,   frontArrow2,   "black", 2);
+      line3D(rightArrow1,   rightArrow2,   "black", 2);
+      line3D(topArrow1,     topArrow2,     "black", 2);
+
+      line3D(xone1,  xone2,  "black", 2);
+      line3D(xtwo1,  xtwo2,  "black", 2);
+      line3D(xmone1, xmone2, "black", 2);
+      line3D(xmtwo1, xmtwo2, "black", 2);
+
+      line3D(yone1,  yone2,  "black", 2);
+      line3D(ytwo1,  ytwo2,  "black", 2);
+      line3D(ymone1, ymone2, "black", 2);
+      line3D(ymtwo1, ymtwo2, "black", 2);
+
+      line3D(zone1,  zone2,  "black", 2);
+      line3D(ztwo1,  ztwo2,  "black", 2);
+      line3D(zmone1, zmone2, "black", 2);
+      line3D(zmtwo1, zmtwo2, "black", 2);
     }
 
   }
