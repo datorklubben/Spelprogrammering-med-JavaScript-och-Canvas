@@ -497,9 +497,6 @@ function RoboroMath(origoX, origoY, step, canvas)
   this.xMax   = this.c.width/this.step/2;
   this.xMin   = -this.xMax;
 
-  this.DDDPerspective  = true;
-  this.DDDAxesRotation = {dx:0, dy:0, dz:0};
-
   this.point = function(x, y, size, color, label)
   {
     var size = typeof(size) != 'undefined' ? size : (this.step/30);
@@ -508,12 +505,12 @@ function RoboroMath(origoX, origoY, step, canvas)
     env.c.save();
     env.c.translate(this.origoX, this.origoY);
     env.c.circle(x*this.step, -y*this.step, size, color);
-    
+
     var xOffset = x > 0 ? -4 : label.length*12+32;
     var yOffset = y > 0 ? 0 : 28;
-    
+
     env.c.text(x*this.step+3-xOffset, -y*this.step-3+yOffset, 20, label, color);
-    
+
     env.c.restore();
   }
 
@@ -522,18 +519,18 @@ function RoboroMath(origoX, origoY, step, canvas)
     var size = typeof(size) != 'undefined' ? size : (this.step/30);
     var color = typeof(color) != 'undefined' ? color : "black";
     var label = typeof(label) != 'undefined' ? label : "";
-    var x = r*Math.cos(v); 
-    var y = r*Math.sin(v); 
+    var x = r*Math.cos(v);
+    var y = r*Math.sin(v);
     this.point(x, y, size, color, label);
   }
 
   this.polarLine = function(v1, r1, v2, r2, color)
   {
-    var x1 = r1*Math.cos(v1); 
-    var y1 = r1*Math.sin(v1); 
-    var x2 = r2*Math.cos(v2); 
-    var y2 = r2*Math.sin(v2); 
-    
+    var x1 = r1*Math.cos(v1);
+    var y1 = r1*Math.sin(v1);
+    var x2 = r2*Math.cos(v2);
+    var y2 = r2*Math.sin(v2);
+
     this.line(x1, y1, x2, y2, color);
   }
 
@@ -546,7 +543,7 @@ function RoboroMath(origoX, origoY, step, canvas)
     env.c.text(x*this.step, -y*this.step, size, label, color);
     env.c.restore();
   }
- 
+
   this.line = function(x1, y1, x2, y2, color, thickness)
   {
     var color = typeof(color) != 'undefined' ? color : "black";
@@ -555,21 +552,95 @@ function RoboroMath(origoX, origoY, step, canvas)
     env.c.save();
     env.c.translate(this.origoX, this.origoY);
     env.c.line(x1*this.step, -y1*this.step, x2*this.step, -y2*this.step, thickness, color);
-    env.c.restore();    
+    env.c.restore();
   }
 
-  this.line3D = function(point1, point2, color, thickness)
+  this.axes = function()
+  {
+    var stepNoDecimals = Math.floor(this.step);
+
+    this.c.line(this.origoX, 0, this.origoX, this.c.height, 2, "black");
+    this.c.line(0, this.origoY, this.c.width, this.origoY, 2, "black");
+
+    for (var i = this.origoX; i <= (this.c.width - stepNoDecimals); i+=stepNoDecimals)
+      this.c.line(i, this.origoY-10, i, this.origoY+10, 1, "black");
+    for (var i = this.origoX; i >= stepNoDecimals; i-=stepNoDecimals)
+      this.c.line(i, this.origoY-10, i, this.origoY+10, 1, "black");
+
+    for (var i = this.origoY; i <= (this.c.height - stepNoDecimals); i+=stepNoDecimals)
+      this.c.line(this.origoX-10, i, this.origoX+10, i, 1, "black");
+    for (var i = this.origoY; i >= stepNoDecimals; i-=stepNoDecimals)
+      this.c.line(this.origoX-10, i, this.origoX+10, i, 1, "black");
+
+    this.c.triangle(this.origoX-10, 10, this.origoX+10, 10, this.origoX, 0, "black");
+    this.c.text(this.origoX-20, 30, 20, "y", "black");
+    this.c.triangle(this.c.width-10, this.origoY-10, this.c.width-10, this.origoY+10, this.c.width, this.origoY, "black");
+    this.c.text(this.c.width-30, this.origoY+22, 20, "x", "black");
+  }
+
+  this.unitCircle = function()
+  {
+    this.c.ring(this.origoX, this.origoY, this.step, 1, "#333333");
+  }
+
+  this.arcDegrees = function(r, angle, width, color)
+  {
+    this.c.arc(this.origoX, this.origoY, r*this.step, angle, width, color);
+  }
+
+  this.arcRadians = function(r, angle, width, color)
+  {
+    this.arcDegrees(r, angle*(180/Math.PI), width, color);
+  }
+
+  // Here be 3D-dragons  
+
+  this.DDDPerspective  = true;
+  this.DDDRotation     = {dvx:0, dvy:0, dvz:0};
+  this.DDDStack        = new Array();
+
+  this.save3D = function() 
+  { 
+    this.DDDStack.push({rotation: this.DDDRotation, 
+                        origoX: this.origoX, 
+                        origoY: this.origoY}); 
+  };
+
+  this.restore3D = function() 
+  { 
+    var oldState = this.DDDStack.pop();
+
+    this.DDDRotation = oldState.rotation;
+    this.origoX      = oldState.origoX;
+    this.origoY      = oldState.origoY;
+  };
+
+  this.rotate3D = function(dx, dy, dz)
+  {
+    this.DDDRotation.dvx += dx;
+    this.DDDRotation.dvy += dy;
+    this.DDDRotation.dvz += dz;
+  };
+
+  this.point3D = function(x, y, z, color)
   {
     var color = typeof(color) != 'undefined' ? color : "black";
-    var thickness = typeof(thickness) != 'undefined' ? thickness : 1;
-    point1.lineTo(point2, color, thickness);
-  }
 
-  this.distance3D = function(point1, point2)
-  {
-    return env.c.distance3D(point1.x, point1.y, point1.z, point2.x, point2.y, point2.z);
-  }
-  
+    with(env.DDDRotation)
+    { 
+      var coords = env.calculate3DRotatedCoordinates(x, y, z, dvx, dvy, dvz); 
+    }
+
+    env.c.save();
+    env.c.translate(env.origoX, env.origoY);
+    var zmax = 10;
+    var zdiff = env.DDDPerspective ? (zmax+coords.z)/zmax : 1;
+    var size = coords.z+4 > 0 ? coords.z+4+2 : 2;
+      
+    env.c.circle(coords.x*env.step*zdiff, -coords.y*env.step*zdiff, size, color);
+    env.c.restore();
+  };
+
   this.Point3D = function(x, y, z, color)
   {
     this.x = x;
@@ -582,12 +653,12 @@ function RoboroMath(origoX, origoY, step, canvas)
       env.c.save();
       env.c.translate(env.origoX, env.origoY);
       var zmax = 10;
-      var zdiff = env.DDDPerspective ? (zmax+this.z)/zmax : 1;      
+      var zdiff = env.DDDPerspective ? (zmax+this.z)/zmax : 1;
       var size = this.z+4 > 0 ? this.z+4+2 : 2;
       
       env.c.circle(this.x*env.step*zdiff, -this.y*env.step*zdiff, size, this.color);
       env.c.restore();
-    }
+    };
     
     this.rotate = function(dvx, dvy, dvz)
     {
@@ -608,7 +679,7 @@ function RoboroMath(origoX, origoY, step, canvas)
       oldY = this.y;
       this.x = oldX*Math.cos(dvz)-oldY*Math.sin(dvz);
       this.y = oldX*Math.sin(dvz)+oldY*Math.cos(dvz);    
-    }
+    };
     
     this.lineTo = function(point2, color, thickness)
     {
@@ -619,38 +690,86 @@ function RoboroMath(origoX, origoY, step, canvas)
       var zdiff2 = env.DDDPerspective ? (zmax+point2.z)/zmax : 1;
       env.c.line(this.x*env.step*zdiff1, -this.y*env.step*zdiff1, point2.x*env.step*zdiff2, -point2.y*env.step*zdiff2, thickness, color);
       env.c.restore();    
+    };
+  };
+  
+  this.line3D = function(a)
+  {
+    var thickness = 1;
+    var color = "black";
+    if (arguments.length >= 6) // x,y,z,x2,y2,z2,color,thickness
+    {
+      if (arguments.length >= 7)
+        color = arguments[6];
+      if (arguments.length == 8)
+        thickness = arguments[7];
+
+      var x1 = arguments[0];
+      var y1 = arguments[1];
+      var z1 = arguments[2];
+      var x2 = arguments[3];
+      var y2 = arguments[4];
+      var z2 = arguments[5];
+
+      with(env.DDDRotation)
+      { 
+        var coords1 = env.calculate3DRotatedCoordinates(x1, y1, z1, dvx, dvy, dvz); 
+        var coords2 = env.calculate3DRotatedCoordinates(x2, y2, z2, dvx, dvy, dvz); 
+      }
+
+      env.c.save();
+      env.c.translate(env.origoX, env.origoY);
+      var zmax = 10;
+      var zdiff1 = env.DDDPerspective ? (zmax+coords1.z)/zmax : 1;
+      var zdiff2 = env.DDDPerspective ? (zmax+coords2.z)/zmax : 1;
+      env.c.line(coords1.x*env.step*zdiff1, 
+                 -coords1.y*env.step*zdiff1, 
+                 coords2.x*env.step*zdiff2, 
+                 -coords2.y*env.step*zdiff2, 
+                 thickness, color);
+      env.c.restore();    
     }
-  }
+    else // point1, point2, color, thickness
+    {
+      if (arguments.length >= 3)
+        color = arguments[2];
+      if (arguments.length == 4)
+        thickness = arguments[3];
+      
+      var point1 = arguments[0];
+      var point2 = arguments[1];
+
+      point1.lineTo(point2, color, thickness);
+    }
+  };
   
-  this.axes = function()
+  this.distance3D = function(point1, point2)
   {
-    var stepNoDecimals = Math.floor(this.step);
+    return env.c.distance3D(point1.x, point1.y, point1.z, point2.x, point2.y, point2.z);
+  };
 
-    this.c.line(this.origoX, 0, this.origoX, this.c.height, 2, "black");
-    this.c.line(0, this.origoY, this.c.width, this.origoY, 2, "black");
-
-    for (var i = this.origoX; i <= (this.c.width - stepNoDecimals); i+=stepNoDecimals)
-      this.c.line(i, this.origoY-10, i, this.origoY+10, 1, "black");
-    for (var i = this.origoX; i >= stepNoDecimals; i-=stepNoDecimals)
-      this.c.line(i, this.origoY-10, i, this.origoY+10, 1, "black");
-
-    for (var i = this.origoY; i <= (this.c.height - stepNoDecimals); i+=stepNoDecimals)
-      this.c.line(this.origoX-10, i, this.origoX+10, i, 1, "black");
-    for (var i = this.origoY; i >= stepNoDecimals; i-=stepNoDecimals)
-      this.c.line(this.origoX-10, i, this.origoX+10, i, 1, "black");
-    
-    this.c.triangle(this.origoX-10, 10, this.origoX+10, 10, this.origoX, 0, "black");
-    this.c.text(this.origoX-20, 30, 20, "y", "black");
-    this.c.triangle(this.c.width-10, this.origoY-10, this.c.width-10, this.origoY+10, this.c.width, this.origoY, "black");
-    this.c.text(this.c.width-30, this.origoY+22, 20, "x", "black");
-  }
-  
-  this.rotate3DAxes = function(dx, dy, dz)
+  this.calculate3DRotatedCoordinates = function(x, y, z, dvx, dvy, dvz)
   {
-    this.DDDAxesRotation.dx += dx;
-    this.DDDAxesRotation.dy += dy;
-    this.DDDAxesRotation.dz += dz;
-  }
+    // rotate about x
+    var oldY = y;
+    var oldZ = z;
+    y = oldY*Math.cos(dvx)-oldZ*Math.sin(dvx);
+    z = oldY*Math.sin(dvx)+oldZ*Math.cos(dvx);
+      
+    // rotate about y
+    var oldX = x;
+    oldZ = z;
+    x = oldZ*Math.sin(dvy)+oldX*Math.cos(dvy);
+    z = oldZ*Math.cos(dvy)-oldX*Math.sin(dvy);
+      
+    // rotate about z
+    oldX = x;
+    oldY = y;
+    x = oldX*Math.cos(dvz)-oldY*Math.sin(dvz);
+    y = oldX*Math.sin(dvz)+oldY*Math.cos(dvz);    
+
+    return {x: x, y: y, z: z};
+  };
 
   this.axes3D = function()
   {
@@ -665,7 +784,7 @@ function RoboroMath(origoX, origoY, step, canvas)
       var backExtreme   = new Point3D(0, 0, -3);
       var frontExtreme  = new Point3D(0, 0, 3);
       var frontExtreme2 = new Point3D(0, 0, 2.9);
-      
+
       var topArrow1   = new Point3D(0.1, 2.9, 0);
       var topArrow2   = new Point3D(-0.1, 2.9, 0);
       var rightArrow1 = new Point3D(2.9, 0.1, 0);
@@ -702,11 +821,11 @@ function RoboroMath(origoX, origoY, step, canvas)
       var zmone2  = new Point3D(-0.1, 0, -1);
       var zmtwo1  = new Point3D(0.1,  0, -2);
       var zmtwo2  = new Point3D(-0.1, 0, -2);
-      
+
       var axes = [rightExtreme, leftExtreme, rightExtreme2,
-                  topExtreme, bottomExtreme, topExtreme2, 
+                  topExtreme, bottomExtreme, topExtreme2,
                   backExtreme, frontExtreme, frontExtreme2,
-                  topArrow1, topArrow2, 
+                  topArrow1, topArrow2,
                   rightArrow1, rightArrow2,
                   frontArrow1, frontArrow2,
                   xone1, xone2, xtwo1, xtwo2,
@@ -715,57 +834,41 @@ function RoboroMath(origoX, origoY, step, canvas)
                   ymone1, ymone2, ymtwo1, ymtwo2,
                   zone1, zone2, ztwo1, ztwo2,
                   zmone1, zmone2, zmtwo1, zmtwo2];
-      
-      for (index in axes) 
-        axes[index].rotate(DDDAxesRotation.dx,
-                           DDDAxesRotation.dy,
-                           DDDAxesRotation.dz); 
+
+      for (index in axes)
+        axes[index].rotate(DDDRotation.dvx,
+                           DDDRotation.dvy,
+                           DDDRotation.dvz);
 
       line3D(rightExtreme2, leftExtreme,   "black", 2);
-      line3D(backExtreme,   frontExtreme2, "black", 2);
+      line3D(backExtreme,  frontExtreme2,  "black", 2);
       line3D(topExtreme2,   bottomExtreme, "black", 2);
-      line3D(topExtreme,    topArrow1,     "black", 2);
-      line3D(topExtreme,    topArrow2,     "black", 2);
-      line3D(rightExtreme,  rightArrow1,   "black", 2);
-      line3D(rightExtreme,  rightArrow2,   "black", 2);
-      line3D(frontExtreme,  frontArrow1,   "black", 2);
-      line3D(frontExtreme,  frontArrow2,   "black", 2);
-      line3D(frontArrow1,   frontArrow2,   "black", 2);
-      line3D(rightArrow1,   rightArrow2,   "black", 2);
-      line3D(topArrow1,     topArrow2,     "black", 2);
+      line3D(topExtreme,   topArrow1,     "black", 2);
+      line3D(topExtreme,   topArrow2,     "black", 2);
+      line3D(rightExtreme,   rightArrow1,     "black", 2);
+      line3D(rightExtreme,   rightArrow2,     "black", 2);
+      line3D(frontExtreme,   frontArrow1,     "black", 2);
+      line3D(frontExtreme,   frontArrow2,     "black", 2);
+      line3D(frontArrow1,   frontArrow2,     "black", 2);
+      line3D(rightArrow1,   rightArrow2,     "black", 2);
+      line3D(topArrow1,   topArrow2,     "black", 2);
 
-      line3D(xone1,  xone2,  "black", 2);
-      line3D(xtwo1,  xtwo2,  "black", 2);
+      line3D(xone1, xone2, "black", 2);
+      line3D(xtwo1, xtwo2, "black", 2);
       line3D(xmone1, xmone2, "black", 2);
       line3D(xmtwo1, xmtwo2, "black", 2);
 
-      line3D(yone1,  yone2,  "black", 2);
-      line3D(ytwo1,  ytwo2,  "black", 2);
+      line3D(yone1,  yone2, "black", 2);
+      line3D(ytwo1,  ytwo2, "black", 2);
       line3D(ymone1, ymone2, "black", 2);
       line3D(ymtwo1, ymtwo2, "black", 2);
 
-      line3D(zone1,  zone2,  "black", 2);
-      line3D(ztwo1,  ztwo2,  "black", 2);
+      line3D(zone1,  zone2, "black", 2);
+      line3D(ztwo1,  ztwo2, "black", 2);
       line3D(zmone1, zmone2, "black", 2);
       line3D(zmtwo1, zmtwo2, "black", 2);
     }
-
-  }
-
-  this.unitCircle = function()
-  {
-    this.c.ring(this.origoX, this.origoY, this.step, 1, "#333333");
-  }
-
-  this.arcDegrees = function(r, angle, width, color)
-  {
-    this.c.arc(this.origoX, this.origoY, r*this.step, angle, width, color);
-  }
-
-  this.arcRadians = function(r, angle, width, color)
-  {
-    this.arcDegrees(r, angle*(180/Math.PI), width, color);
-  }
+  };
 }
 
 function RoboroTurtle(startX, startY, canvas)
