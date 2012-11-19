@@ -622,7 +622,7 @@ function RoboroMath(origoX, origoY, step, canvas)
     this.DDDRotation.dvz += dz;
   };
 
-  this.point3D = function(x, y, z, color)
+  this.point3D = function(x, y, z, color, fixedSize)
   {
     var color = typeof(color) != 'undefined' ? color : "black";
 
@@ -635,10 +635,23 @@ function RoboroMath(origoX, origoY, step, canvas)
     env.c.translate(env.origoX, env.origoY);
     var zmax = 10;
     var zdiff = env.DDDPerspective ? (zmax+coords.z)/zmax : 1;
-    var size = coords.z+4 > 0 ? coords.z+4+2 : 2;
+    var size = typeof(fixedSize) != 'undefined' ? fixedSize : (coords.z+4 > 0 ? coords.z+4+2 : 2);
       
     env.c.circle(coords.x*env.step*zdiff, -coords.y*env.step*zdiff, size, color);
     env.c.restore();
+  };
+
+  this.sphericalPoint = function(radius, inclination, azimuth, color, fixedSize)
+  {
+    var color = typeof(color) != 'undefined' ? color : "black";
+
+    var x = radius * Math.sin(inclination) * Math.cos(azimuth);
+    var y = radius * Math.sin(inclination) * Math.sin(azimuth);
+    var z = radius * Math.cos(inclination);
+    if (typeof(fixedSize) != 'undefined')
+      this.point3D(x, y, z, color, fixedSize);
+    else
+      this.point3D(x, y, z, color);
   };
 
   this.Point3D = function(x, y, z, color)
