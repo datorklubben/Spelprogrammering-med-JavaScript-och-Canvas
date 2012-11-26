@@ -654,6 +654,37 @@ function RoboroMath(origoX, origoY, step, canvas)
       this.point3D(x, y, z, color);
   };
 
+  this.sphericalLine = function(radius, inclination, azimuth, color, thickness)
+  {
+    var color = typeof(color) != 'undefined' ? color : "black";
+    var thickness = typeof(thickness) != 'undefined' ? thickness : 1;
+
+    var x = radius * Math.sin(inclination) * Math.cos(azimuth);
+    var y = radius * Math.sin(inclination) * Math.sin(azimuth);
+    var z = radius * Math.cos(inclination);
+
+    this.line3D(0, 0, 0, x, y, z, color, thickness);
+  };
+
+  this.text3D = function(x, y, z, text, color)
+  {
+    var color = typeof(color) != 'undefined' ? color : "black";
+
+    with(env.DDDRotation)
+    { 
+      var coords = env.calculate3DRotatedCoordinates(x, y, z, dvx, dvy, dvz); 
+    }
+
+    env.c.save();
+    env.c.translate(env.origoX, env.origoY);
+    var zmax = 10;
+    var zdiff = env.DDDPerspective ? (zmax+coords.z)/zmax : 1;
+    var size = typeof(fixedSize) != 'undefined' ? fixedSize : (coords.z+4 > 0 ? coords.z+4+2 : 2);
+  
+    env.c.text(coords.x*env.step*zdiff, -coords.y*env.step*zdiff, size*10, text, color);
+    env.c.restore();
+  };
+
   this.Point3D = function(x, y, z, color)
   {
     this.x = x;
