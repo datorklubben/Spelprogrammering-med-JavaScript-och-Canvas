@@ -601,7 +601,9 @@ function RoboroMath(origoX, origoY, step, canvas)
 
   this.save3D = function() 
   { 
-    this.DDDStack.push({rotation: this.DDDRotation, 
+    this.DDDStack.push({rotation: { dvx: this.DDDRotation.dvx, 
+                                    dvy: this.DDDRotation.dvy,
+                                    dvz: this.DDDRotation.dvz }, 
                         origoX: this.origoX, 
                         origoY: this.origoY}); 
   };
