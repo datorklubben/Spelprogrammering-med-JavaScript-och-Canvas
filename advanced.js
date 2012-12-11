@@ -464,15 +464,52 @@ function RoboroCanvas(id)
     this.context2D.rotate(radians);
   };
 
-  this.line = function(x1, y1, x2, y2, width, color)
+  this.line = function(x1, y1, x2, y2, width, color, dashed)
   {
-    this.context2D.strokeStyle = color;
-    this.context2D.lineWidth = width;
-    this.context2D.beginPath();
-    this.context2D.moveTo(x1, y1);
-    this.context2D.lineTo(x2, y2);
-    this.context2D.stroke();
-    this.context2D.closePath();
+    var dashed = typeof(dashed) != 'undefined' ? dashed : false;
+    if (!dashed)
+    {
+      this.context2D.strokeStyle = color;
+      this.context2D.lineWidth = width;
+      this.context2D.beginPath();
+      this.context2D.moveTo(x1, y1);
+      this.context2D.lineTo(x2, y2);
+      this.context2D.stroke();
+      this.context2D.closePath();
+    }
+    else
+    {
+      var length = this.distance(x1, y1, x2, y2);
+      var angle = Math.asin(Math.abs(y1-y2)/length);
+      this.save();
+      this.translate(x1,y1);
+      this.rotate(angle*180/Math.PI);
+      for(var i=0; i<(length); i += (length/20))
+        this.line(i, 0, i+length/40, 0, width, color);
+      this.restore();
+    }
+  };
+
+  this.arrow = function(x, y, angle, length, dashed, thickness, color)
+  {
+    var dashed = typeof(dashed) != 'undefined' ? dashed : false;
+    var thickness = typeof(thickness) != 'undefined' ? thickness : 2;
+    var color = typeof(color) != 'undefined' ? color : "black";
+    this.save();
+    this.translate(x,y);
+    this.rotate(-angle);
+    if (!dashed)
+      this.line(0, 0, length, 0, thickness, color);
+    else
+    {
+      for(var i=0; i<(length-length/20); i += (length/20))
+        this.line(i, 0, i+length/40, 0, thickness, color);
+      this.line(length-thickness, 0, length-length/20, 0, thickness, color);
+    }
+
+    this.line(length, 0, length-15, 7, thickness, color);
+    this.line(length, 0, length-15, -7, thickness, color);
+    this.restore();    
   };
 
   this.getPixel = function(x, y)
