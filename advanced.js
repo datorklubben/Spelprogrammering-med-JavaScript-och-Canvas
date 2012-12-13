@@ -484,8 +484,8 @@ function RoboroCanvas(id)
       this.save();
       this.translate(x1,y1);
       this.rotate(angle*180/Math.PI);
-      for(var i=0; i<(length); i += (length/20))
-        this.line(i, 0, i+length/40, 0, width, color);
+      for(var i=0; i<(length); i += 15)
+        this.line(i, 0, i+7, 0, width, color);
       this.restore();
     }
   };
@@ -502,13 +502,13 @@ function RoboroCanvas(id)
       this.line(0, 0, length, 0, thickness, color);
     else
     {
-      for(var i=0; i<(length-length/20); i += (length/20))
-        this.line(i, 0, i+length/40, 0, thickness, color);
-      this.line(length-thickness, 0, length-length/20, 0, thickness, color);
+      for(var i=0; i<(length-10); i += 15)
+        this.line(i, 0, i+7, 0, thickness, color);
+      this.line(length-thickness, 0, length-20, 0, thickness, color);
     }
 
-    this.line(length, 0, length-15, 7, thickness, color);
-    this.line(length, 0, length-15, -7, thickness, color);
+    this.line(length, 0, length-15, 3, thickness, color);
+    this.line(length, 0, length-15, -3, thickness, color);
     this.restore();    
   };
 
