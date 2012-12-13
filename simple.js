@@ -137,6 +137,12 @@ function init()
     window.touchscreen = c.touchscreen;
 
     window.hideMouse = function() { canvas.style.cursor = 'none'; }
+    
+    var roboroSound = new RoboroSound();
+    
+    window.preloadSound = function(url) { roboroSound.preloadSound(url) };
+    window.playSound    = function(url) { roboroSound.playSound(url) };
+    window.loopSound    = function(url) { roboroSound.loopSound(url) };
 
     loadAndEvalScript()
     

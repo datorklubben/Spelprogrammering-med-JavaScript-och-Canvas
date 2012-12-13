@@ -99,28 +99,48 @@ function RoboroKeyboard()
 function RoboroSound()
 {
   var sounds = {};
-
-  this.addSound = function(name, urls)
+  
+  this.preloadSound = function(url)
   {
-    var element = document.createElement('audio');
-    element.preload = 'auto';
-    
-    urls.forEach(
-      function(url)
-      {
-        var source = document.createElement('source');
-        source.src = url;
-        element.appendChild(source);
-      }
-    );
-    
-    sounds[name] = element;
+    sounds[url] = new Audio(url);
+    sounds[url].preload = 'auto';
   };
-
-  this.playSound = function(name)
+  
+  this.playSound = function(url)
   {
-    sounds[name].currentTime = 0;
-    sounds[name].play();
+    if (sounds[url])
+    {
+      sounds[url].currentTime = 0;
+      sounds[url].loop = false;
+      sounds[url].play();
+    }
+    else
+    {
+      this.preloadSound(url);
+    }
+  };
+  
+  this.loopSound = function(url)
+  {
+    if (sounds[url])
+    {
+      sounds[url].currentTime = 0;
+      sounds[url].loop = true;
+      sounds[url].play();
+    }
+    else
+    {
+      this.preloadSound(url);
+    }
+  };
+  
+  this.stopSound = function(url)
+  {
+    if (sounds[url])
+    {
+      sounds[url].pause();
+      sounds[url].currentTime = 0;
+    }
   };
 }
 
