@@ -439,18 +439,35 @@ function RoboroCanvas(id)
 
   this.distance = function(x1, y1, x2, y2)
   {
-    var dx = x1 - x2;
-    var dy = y1 - y2;
-  
+    if(x1.hasOwnProperty('x'))
+    {
+      var dx = x1.x - y1.x;
+      var dy = x1.y - y1.y;
+    }
+    else 
+    {
+      var dx = x1 - x2;
+      var dy = y1 - y2;
+    }
+
     return Math.sqrt(dx * dx + dy * dy);
   };
 
   this.distance3D = function(x1, y1, z1, x2, y2, z2)
   {
-    var dx = x1 - x2;
-    var dy = y1 - y2;
-    var dz = z1 - z2;
-  
+    if(x1.hasOwnProperty('x'))
+    {
+      var dx = x1.x - y1.x;
+      var dy = x1.y - y1.y;
+      var dz = x1.z - y1.z;
+    }
+    else 
+    {
+      var dx = x1 - x2;
+      var dy = y1 - y2;
+      var dz = z1 - z2;
+    }
+
     return Math.sqrt(dx * dx + dy * dy + dz * dz);
   };
 
@@ -795,12 +812,44 @@ function RoboroMath(origoX, origoY, step, canvas)
       env.c.restore();    
     };
   };
-  
+
   this.line3D = function(a)
   {
     var thickness = 1;
     var color = "black";
-    if (arguments.length >= 6) // x,y,z,x2,y2,z2,color,thickness
+    if (arguments[0].hasOwnProperty('x')) // p1, p2, color, thickness, where p1={x: , ...}
+    {
+      if (arguments.length >= 3)
+        color = arguments[2];
+      if (arguments.length == 4)
+        thickness = arguments[3];
+
+      var x1 = arguments[0].x;
+      var y1 = arguments[0].y;
+      var z1 = arguments[0].z;
+      var x2 = arguments[1].x;
+      var y2 = arguments[1].y;
+      var z2 = arguments[1].z;
+
+      with(env.DDDRotation)
+      { 
+        var coords1 = env.calculate3DRotatedCoordinates(x1, y1, z1, dvx, dvy, dvz); 
+        var coords2 = env.calculate3DRotatedCoordinates(x2, y2, z2, dvx, dvy, dvz); 
+      }
+
+      env.c.save();
+      env.c.translate(env.origoX, env.origoY);
+      var zmax = 10;
+      var zdiff1 = env.DDDPerspective ? (zmax+coords1.z)/zmax : 1;
+      var zdiff2 = env.DDDPerspective ? (zmax+coords2.z)/zmax : 1;
+      env.c.line(coords1.x*env.step*zdiff1, 
+                 -coords1.y*env.step*zdiff1, 
+                 coords2.x*env.step*zdiff2, 
+                 -coords2.y*env.step*zdiff2, 
+                 thickness, color);
+      env.c.restore();    
+    }
+    else if (arguments.length >= 6) // x,y,z,x2,y2,z2,color,thickness
     {
       if (arguments.length >= 7)
         color = arguments[6];
