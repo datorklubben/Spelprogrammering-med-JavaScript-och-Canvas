@@ -517,7 +517,9 @@ function RoboroCanvas(id)
     else
     {
       var length = this.distance(x1, y1, x2, y2);
-      var angle = Math.asin(Math.abs(y1-y2)/length);
+      var angle = y2 < y1 ? Math.asin((y2-y1)/length) : -Math.asin((y1-y2)/length);
+      if (x2<x1)
+        angle = pi-angle;
       this.save();
       this.translate(x1,y1);
       this.rotate(angle*180/Math.PI);
@@ -1021,6 +1023,30 @@ function RoboroMath(origoX, origoY, step, canvas)
       line3D(zmtwo1, zmtwo2, "black", 2);
     }
   };
+
+  // Vector arithmetics below
+
+  this.getVectorMagnitude = function(vector)
+  {
+    return sqrt(vector.x*vector.x+vector.y*vector.y);
+  };
+
+  this.normalizeVector = function(vector)
+  {
+    var magnitude = env.getVectorMagnitude(vector);
+    return {x: vector.x/magnitude, y: vector.y/magnitude};
+  };
+
+  this.dotProduct = function(v1, v2)
+  {
+    return v1.x*v2.x+v1.y*v2.y;
+  };
+
+  this.addVectors = function(v1, v2)
+  {
+    return {x: v1.x+v2.x, y: v1.y+v2.y};
+  };
+
 }
 
 function RoboroTurtle(startX, startY, canvas)
