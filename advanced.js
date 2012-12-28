@@ -819,7 +819,9 @@ function RoboroMath(origoX, origoY, step, canvas)
   {
     var thickness = 1;
     var color = "black";
-    if (arguments[0].hasOwnProperty('x')) // p1, p2, color, thickness, where p1={x: , ...}
+
+    // p1, p2, color, thickness, where p1={x: , ...}
+    if (arguments[0].hasOwnProperty('x') && !arguments[0].hasOwnProperty('rotate')) 
     {
       if (arguments.length >= 3)
         color = arguments[2];
