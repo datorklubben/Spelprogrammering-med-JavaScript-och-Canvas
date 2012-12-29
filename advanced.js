@@ -397,7 +397,7 @@ function RoboroCanvas(id)
   
   this.text = function(x, y, size, text, color)
   {
-    this.context2D.font = size + "pt monospace";
+    this.context2D.font = size + "pt Courier";
     this.context2D.fillStyle = color;
     this.context2D.fillText(text, x, y);
   };
