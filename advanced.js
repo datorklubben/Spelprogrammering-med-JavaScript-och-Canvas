@@ -1028,14 +1028,14 @@ function RoboroMath(origoX, origoY, step, canvas)
 
   // Vector arithmetics below
 
-  this.getVectorMagnitude = function(vector)
+  this.vectorMagnitude = function(vector)
   {
     return sqrt(vector.x*vector.x+vector.y*vector.y);
   };
 
   this.normalizeVector = function(vector)
   {
-    var magnitude = env.getVectorMagnitude(vector);
+    var magnitude = env.vectorMagnitude(vector);
     return {x: vector.x/magnitude, y: vector.y/magnitude};
   };
 

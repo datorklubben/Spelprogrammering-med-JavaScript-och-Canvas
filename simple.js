@@ -96,13 +96,19 @@ function init()
     math = new RoboroMath(totalWidth/2, totalHeight/2, totalHeight/6, c);
     trig = math;
     turtle = new RoboroTurtle(totalWidth/2, totalHeight/2, c);
+
+    var roboroSound     = new RoboroSound();
+    window.playSound    = function(url) { roboroSound.playSound(url) };
+    window.loopSound    = function(url) { roboroSound.loopSound(url) };
+    window.stopSound    = function(url) { roboroSound.stopSound(url) };
+    window.preloadSound = function(url) { roboroSound.preloadSound(url) };
     
     window.mouse    = c.mouse;
     window.keyboard = k;
 
     // Import some common things from `Math` to the global namespace.
     importMethods(window, Math, ["sin", "cos", "tan", "asin", "acos", "atan",
-                                 "sqrt", "floor", "PI", "abs", "pow"], true)
+                                 "sqrt", "floor", "ceil", "PI", "abs", "pow"], true)
     
     // Also import a bunch of canvas-related functions from the special canvas
     // that occupies the whole page into the global namespace.
@@ -136,14 +142,9 @@ function init()
     
     window.touchscreen = c.touchscreen;
 
-    window.hideMouse = function() { canvas.style.cursor = 'none'; }
+    window.hideMouse = function() { canvas.style.cursor = 'none'; };
+    window.showMouse = function() { canvas.style.cursor = 'default'; };
     
-    var roboroSound = new RoboroSound();
-    
-    window.preloadSound = function(url) { roboroSound.preloadSound(url) };
-    window.playSound    = function(url) { roboroSound.playSound(url) };
-    window.loopSound    = function(url) { roboroSound.loopSound(url) };
-
     loadAndEvalScript()
     
     // See if the special entry-points `start` and `update` are defined, and if
