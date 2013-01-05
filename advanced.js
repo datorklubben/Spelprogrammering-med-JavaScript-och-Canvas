@@ -1049,6 +1049,10 @@ function RoboroMath(origoX, origoY, step, canvas)
     return {x: v1.x+v2.x, y: v1.y+v2.y};
   };
 
+  this.multiplyScalar = function(v, s)
+  {
+    return {x: v.x*s, y: v.y*s};
+  };
 }
 
 function RoboroTurtle(startX, startY, canvas)
