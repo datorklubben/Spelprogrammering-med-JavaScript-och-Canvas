@@ -100,9 +100,27 @@ function RoboroSound()
 {
   this.sounds = {};
   
+  this.canPlaySound = function(mime)
+  {
+    var a = new Audio();
+    return !!(a.canPlayType && a.canPlayType(mime).replace(/no/, ''));
+  };
+
   this.preloadSound = function(url, callback)
   {
-    this.sounds[url] = new Audio(url);
+    if (url.match(/.mp3$|.wav$|.ogg$|.m4a$/g))
+      this.sounds[url] = new Audio(url);
+    else if (this.canPlaySound('audio/mpeg;'))
+      this.sounds[url] = new Audio(url + ".mp3");
+    else if (this.canPlaySound('audio/ogg; codecs="vorbis"'))
+      this.sounds[url] = new Audio(url + ".ogg");
+    else if (this.canPlaySound('audio/mp4; codecs="mp4a.40.2"'))
+      this.sounds[url] = new Audio(url + ".m4a");
+    else if (this.canPlaySound('audio/wav; codecs="1"'))
+      this.sounds[url] = new Audio(url + ".wav");
+    else
+      return;
+
     this.sounds[url].preloaded = false;
     var env = this;
     this.sounds[url].addEventListener('canplaythrough', function()
