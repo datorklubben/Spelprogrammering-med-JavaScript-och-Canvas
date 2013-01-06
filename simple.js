@@ -98,8 +98,8 @@ function init()
     turtle = new RoboroTurtle(totalWidth/2, totalHeight/2, c);
 
     var roboroSound     = new RoboroSound();
-    window.playSound    = function(url) { roboroSound.playSound(url) };
-    window.loopSound    = function(url) { roboroSound.loopSound(url) };
+    window.playSound    = function(url, volume) { roboroSound.playSound(url, volume) };
+    window.loopSound    = function(url, volume) { roboroSound.loopSound(url, volume) };
     window.stopSound    = function(url) { roboroSound.stopSound(url) };
     window.preloadSound = function(url) { roboroSound.preloadSound(url) };
     

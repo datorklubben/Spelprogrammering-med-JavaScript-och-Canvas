@@ -98,48 +98,58 @@ function RoboroKeyboard()
 
 function RoboroSound()
 {
-  var sounds = {};
+  this.sounds = {};
   
-  this.preloadSound = function(url)
+  this.preloadSound = function(url, callback)
   {
-    sounds[url] = new Audio(url);
-    sounds[url].preload = 'auto';
+    this.sounds[url] = new Audio(url);
+    this.sounds[url].preloaded = false;
+    var env = this;
+    this.sounds[url].addEventListener('canplaythrough', function()
+      {
+        env.sounds[url].preloaded = true;
+        if (typeof(callback) !== 'undefined')
+          callback();
+      }, false);
   };
   
-  this.playSound = function(url)
+  this.playSound = function(url, volume, loop)
   {
-    if (sounds[url])
+    if (typeof(volume) === 'undefined')
+      var volume = 1;
+
+    if (typeof(loop) === 'undefined')
+      var loop = false;
+
+    if (typeof(this.sounds[url]) == 'undefined')
     {
-      sounds[url].currentTime = 0;
-      sounds[url].loop = false;
-      sounds[url].play();
+      var env = this;
+      this.preloadSound(url, function() { env.playSound(url, volume, loop); });
     }
-    else
+    else if (this.sounds[url].preloaded)
     {
-      this.preloadSound(url);
+      this.sounds[url].loop = loop;
+      this.sounds[url].currentTime = 0;
+      this.sounds[url].volume = volume;
+      this.sounds[url].play();
     }
+
   };
   
-  this.loopSound = function(url)
+  this.loopSound = function(url, volume)
   {
-    if (sounds[url])
-    {
-      sounds[url].currentTime = 0;
-      sounds[url].loop = true;
-      sounds[url].play();
-    }
-    else
-    {
-      this.preloadSound(url);
-    }
+    if (typeof(volume) === 'undefined')
+      var volume = 1;
+
+    this.playSound(url, volume, true);
   };
-  
+
   this.stopSound = function(url)
   {
-    if (sounds[url])
+    if (typeof(this.sounds[url]) !== 'undefined')
     {
-      sounds[url].pause();
-      sounds[url].currentTime = 0;
+      this.sounds[url].pause();
+      this.sounds[url].currentTime = 0;
     }
   };
 }
