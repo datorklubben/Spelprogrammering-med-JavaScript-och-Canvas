@@ -256,9 +256,6 @@ function RoboroCanvas(id)
     {
       env.mouse.left = false;
 
-      env.mouse.x = -10000;
-      env.mouse.y = -10000;
-
       env.touchscreen.currentlyTouched = false;
     }
   });
@@ -618,6 +615,17 @@ function RoboroMath(origoX, origoY, step, canvas)
     env.c.restore();
   }
 
+  this.ring = function(x, y, size, thickness, color)
+  {
+    var size = typeof(size) != 'undefined' ? size : (this.step/30);
+    var thickness = typeof(thickness) != 'undefined' ? thickness : 1;
+    var color = typeof(color) != 'undefined' ? color : "black";
+    env.c.save();
+    env.c.translate(this.origoX, this.origoY);
+    env.c.ring(x*this.step, -y*this.step, size, thickness, color);
+    env.c.restore();
+  }
+
   this.polarPoint = function(v, r, size, color, label)
   {
     var size = typeof(size) != 'undefined' ? size : (this.step/30);
@@ -626,6 +634,16 @@ function RoboroMath(origoX, origoY, step, canvas)
     var x = r*Math.cos(v);
     var y = r*Math.sin(v);
     this.point(x, y, size, color, label);
+  }
+
+  this.polarRing = function(v, r, size, thickness, color)
+  {
+    var size = typeof(size) != 'undefined' ? size : (this.step/30);
+    var thickness = typeof(thickness) != 'undefined' ? thickness : 1;
+    var color = typeof(color) != 'undefined' ? color : "black";
+    var x = r*Math.cos(v);
+    var y = r*Math.sin(v);
+    this.ring(x, y, size, thickness, color);
   }
 
   this.polarLine = function(v1, r1, v2, r2, color)
