@@ -177,6 +177,7 @@ function RoboroCanvas(id)
   var env = this;
   
   this.id = id;
+  this.pictures = {};
   
   var canvas = document.getElementById(id);
   
@@ -439,12 +440,25 @@ function RoboroCanvas(id)
   
   this.picture = function(x, y, file, width, height)
   {
-    var img = new Image();
-    img.src = file;
-    if ((typeof(width) != 'undefined') && (typeof(height) != 'undefined'))
-      this.context2D.drawImage(img, x, y, width, height);
-    else
-      this.context2D.drawImage(img, x, y);
+    var env = this;
+
+    var callback = function() 
+    {
+      if ((typeof(width) != 'undefined') && (typeof(height) != 'undefined'))
+        env.context2D.drawImage(env.pictures[file], x, y, width, height);
+      else
+        env.context2D.drawImage(env.pictures[file], x, y);
+    }
+
+    if (typeof this.pictures[file] === 'undefined')
+    {
+      this.pictures[file] = new Image();
+      this.pictures[file].src = file;
+
+      this.pictures[file].onload = callback;
+    }
+    else if (this.pictures[file].complete)
+      env.context2D.drawImage(env.pictures[file], x, y);
   };
   
   this.clearScreen = function()
@@ -638,12 +652,12 @@ function RoboroMath(origoX, origoY, step, canvas)
 
   this.polarRing = function(v, r, size, thickness, color)
   {
-    var size = typeof(size) != 'undefined' ? size : (this.step/30);
+    var size = typeof(size) != 'undefined' ? size : 1;
     var thickness = typeof(thickness) != 'undefined' ? thickness : 1;
     var color = typeof(color) != 'undefined' ? color : "black";
     var x = r*Math.cos(v);
     var y = r*Math.sin(v);
-    this.ring(x, y, size, thickness, color);
+    this.ring(x, y, size*this.step, thickness, color);
   }
 
   this.polarLine = function(v1, r1, v2, r2, color)
