@@ -428,9 +428,18 @@ function RoboroCanvas(id)
     this.context2D.fillText(text, x, y);
   };
   
-  this.random = function(max)
+  this.random = function(max, intervalMax)
   {
-    return Math.floor(Math.random() * max);
+    if (typeof(intervalMax) == 'undefined')
+    {
+      return Math.floor(Math.random() * max);
+    }
+    else
+    {
+      var diff = intervalMax - max;
+      
+      return max + Math.floor(Math.random() * (diff+1));
+    }
   };
   
   this.randomAlternative = function(list)
