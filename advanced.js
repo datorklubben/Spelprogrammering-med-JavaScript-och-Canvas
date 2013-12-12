@@ -451,7 +451,7 @@ function RoboroCanvas(id)
   {
     var env = this;
 
-    var callback = function() 
+    var drawPicture = function() 
     {
       if ((typeof(width) != 'undefined') && (typeof(height) != 'undefined'))
         env.context2D.drawImage(env.pictures[file], x, y, width, height);
@@ -464,10 +464,11 @@ function RoboroCanvas(id)
       this.pictures[file] = new Image();
       this.pictures[file].src = file;
 
-      this.pictures[file].onload = callback;
+      this.pictures[file].onload = drawPicture;
     }
     else if (this.pictures[file].complete)
-      env.context2D.drawImage(env.pictures[file], x, y);
+      drawPicture();
+
   };
   
   this.clearScreen = function()
@@ -483,6 +484,11 @@ function RoboroCanvas(id)
   this.mixColor = function(red, green, blue)
   {
     return "rgb(" + red + "," + green + "," + blue + ")";
+  };
+
+  this.randomColor = function()
+  {
+    return mixColor(random(256), random(256), random(256));
   };
 
   this.distance = function(x1, y1, x2, y2)
