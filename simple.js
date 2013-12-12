@@ -127,6 +127,7 @@ function init()
        "distance",
        "distance3D",
        "mixColor",
+       "randomColor",
        "save",
        "restore",
        "translate",
