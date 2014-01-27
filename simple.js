@@ -107,7 +107,7 @@ function init()
     window.keyboard = k;
 
     // Import some common things from `Math` to the global namespace.
-    importMethods(window, Math, ["sin", "cos", "tan", "asin", "acos", "atan",
+    importMethods(window, Math, ["sin", "cos", "tan", "asin", "acos", "atan", "round",
                                  "sqrt", "floor", "ceil", "PI", "abs", "pow"], true)
     
     // Also import a bunch of canvas-related functions from the special canvas
