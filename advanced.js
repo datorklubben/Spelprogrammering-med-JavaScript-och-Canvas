@@ -25,6 +25,8 @@ function RoboroKeyboard()
   var env = this;
 
   this.verbose = false;
+
+  this.keysDown = 0;
   
   this.names =
   {
@@ -80,6 +82,9 @@ function RoboroKeyboard()
   
   document.onkeydown = function(event)
   {
+    if (! env[event.keyCode])
+      env.keysDown++;
+
     if (env.names[event.keyCode] !== undefined)
       env[env.names[event.keyCode]] = true;
     env[event.keyCode] = true;
@@ -93,6 +98,8 @@ function RoboroKeyboard()
     if (env.names[event.keyCode] !== undefined)
       env[env.names[event.keyCode]] = false;
     env[event.keyCode] = false;
+
+    env.keysDown--;
   };
 }
 
