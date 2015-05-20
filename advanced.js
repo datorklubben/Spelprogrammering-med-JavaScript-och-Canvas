@@ -174,6 +174,7 @@ function RoboroSound()
     if (typeof(this.sounds[url]) !== 'undefined')
     {
       this.sounds[url].pause();
+      this.sounds[url].volume = 0;
       this.sounds[url].currentTime = 0;
     }
   };
