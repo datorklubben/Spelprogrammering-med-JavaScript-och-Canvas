@@ -99,6 +99,7 @@ function init()
 
     var roboroSound     = new RoboroSound();
     window.playSound    = function(url, volume) { roboroSound.playSound(url, volume) };
+    window.setVolume    = function(url, volume) { roboroSound.setVolume(url, volume) };
     window.loopSound    = function(url, volume) { roboroSound.loopSound(url, volume) };
     window.stopSound    = function(url) { roboroSound.stopSound(url) };
     window.preloadSound = function(url) { roboroSound.preloadSound(url) };

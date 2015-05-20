@@ -178,6 +178,14 @@ function RoboroSound()
       this.sounds[url].currentTime = 0;
     }
   };
+
+  this.setVolume = function(url, volume)
+  {
+    if (typeof(this.sounds[url]) !== 'undefined')
+    {
+      this.sounds[url].volume = volume;
+    }
+  };
 }
 
 function RoboroCanvas(id)
