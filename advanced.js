@@ -297,6 +297,9 @@ function RoboroCanvas(id)
       env.touchscreen.points[i].y  = event.touches[i].clientY - totalOffsetY;
       env.touchscreen.points[i].id = env.touchscreen.points[i].identifier;
     }
+
+    env.mouse.x = event.touches[0].clientX - totalOffsetX;
+    env.mouse.y = event.touches[0].clientY - totalOffsetY;
   };
   
   canvas.ontouchend = function(event)
