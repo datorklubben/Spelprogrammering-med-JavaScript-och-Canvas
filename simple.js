@@ -144,7 +144,7 @@ function init()
        "store",
        "load",
        "startGPS",
-       "loadGPS"];
+       "stopGPS"];
     
     importMethods(window, c, functions)
     
