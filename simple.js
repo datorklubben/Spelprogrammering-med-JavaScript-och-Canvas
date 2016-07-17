@@ -103,6 +103,8 @@ function init()
     window.loopSound    = function(url, volume) { roboroSound.loopSound(url, volume) };
     window.stopSound    = function(url) { roboroSound.stopSound(url) };
     window.preloadSound = function(url) { roboroSound.preloadSound(url) };
+
+    window.gps = c.gps;
     
     window.mouse    = c.mouse;
     window.keyboard = k;
@@ -140,7 +142,9 @@ function init()
        "getPixel",
        "stopUpdate",
        "store",
-       "load"];
+       "load",
+       "startGPS",
+       "loadGPS"];
     
     importMethods(window, c, functions)
     
@@ -230,7 +234,7 @@ function init()
   };
   
   loadErrorConsole();
-  loadScript("http://www.spelprogrammering.nu/advanced.js", simplify);
+  loadScript("http://www.koda.nu/advanced.js", simplify);
 }
 
 function loadErrorConsole() {

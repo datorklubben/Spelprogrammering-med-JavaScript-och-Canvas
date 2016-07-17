@@ -372,7 +372,7 @@ function RoboroCanvas(id)
   this.lastUpdate           = new Date().getTime();
   this.deltaT               = this.updatesPerSecond;
   this.preventMouseDefaults = false;
-  
+
   this.runUpdate = function()
   {
     if (env.running)
@@ -396,6 +396,50 @@ function RoboroCanvas(id)
     env.running = false;
   };
   
+  this.watchGPSID = 0;
+  this.gps = 
+  {
+    latitude:  0, 
+    longitude: 0, 
+    speed:     0, 
+    altitude:  0, 
+    timestamp: 0, 
+    accuracy:  0,
+    heading:   0,
+    altitudeAccuracy: 0
+  };
+  
+  this.startGPS = function()
+  {
+    var geo_success = function(position) 
+    {
+      env.gps.latitude  = position.coords.latitude;
+      env.gps.longitude = position.coords.longitude;
+      env.gps.altitude  = position.coords.altitude;
+      env.gps.accuracy  = position.coords.accuracy;
+      env.gps.timestamp = position.timestamp;
+      env.gps.speed     = position.coords.speed;
+      env.gps.heading   = position.coords.heading;
+      env.gps.altitudeAccuracy = position.coords.altitudeAccuracy;
+    };
+
+    var geo_error = function() 
+    {
+      console.log("Sorry, no position available.");
+    };
+
+    var geo_options = {enableHighAccuracy: true, 
+                       maximumAge        : 30000, 
+                       timeout           : 27000};
+
+    env.watchGPSID = navigator.geolocation.watchPosition(geo_success, geo_error, geo_options);
+  };
+  
+  this.stopGPS = function()
+  {
+    navigator.geolocation.clearWatch(env.watchGPSID);
+  };
+
   this.store = function(name, value)
   {
     var localStoreSupport = function()
@@ -415,7 +459,7 @@ function RoboroCanvas(id)
     {
       document.cookie = name+"="+JSON.stringify(value)+"; path=/";
     }
-  }
+  };
 
   this.load = function(name)
   {
@@ -447,7 +491,7 @@ function RoboroCanvas(id)
       }
       return null;
     }
-  }
+  };
 
   this.circle = function(x, y, radius, color) 
   {
