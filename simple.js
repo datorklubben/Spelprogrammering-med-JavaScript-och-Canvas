@@ -138,7 +138,9 @@ function init()
        "line",
        "arrow",
        "getPixel",
-       "stopUpdate"];
+       "stopUpdate",
+       "store",
+       "load"];
     
     importMethods(window, c, functions)
     

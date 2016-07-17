@@ -396,6 +396,59 @@ function RoboroCanvas(id)
     env.running = false;
   };
   
+  this.store = function(name, value)
+  {
+    var localStoreSupport = function()
+    {
+      try {
+        return 'localStorage' in window && window['localStorage'] !== null;
+      } catch (e) {
+        return false;
+      }
+    }
+    
+    if(localStoreSupport()) 
+    {
+      localStorage.setItem(name, JSON.stringify(value));
+    }
+    else 
+    {
+      document.cookie = name+"="+JSON.stringify(value)+"; path=/";
+    }
+  }
+
+  this.load = function(name)
+  {
+    var localStoreSupport = function()
+    {
+      try {
+        return 'localStorage' in window && window['localStorage'] !== null;
+      } catch (e) {
+        return false;
+      }
+    }
+    
+    if(localStoreSupport()) 
+    {
+      return JSON.parse(localStorage.getItem(name));
+    }
+    else 
+    {
+      var nameEQ = name + "=";
+      var ca = document.cookie.split(';');
+      for(var i=0;i < ca.length;i++) 
+      {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) 
+        {
+          return JSON.parse(c.substring(nameEQ.length,c.length));
+        }
+      }
+      return null;
+    }
+  }
+
   this.circle = function(x, y, radius, color) 
   {
     this.context2D.fillStyle = color;
