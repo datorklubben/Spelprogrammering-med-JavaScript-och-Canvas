@@ -395,6 +395,51 @@ function RoboroCanvas(id)
   {
     env.running = false;
   };
+
+  this.distanceGeoCoord = function(lat1, lon1, lat2, lon2) 
+  {
+    var deg2rad = function(deg) { return deg * (Math.PI/180) };
+    
+    if(lat1.hasOwnProperty('latitude'))
+    {
+      var dLat = deg2rad(lon1.latitude-lat1.latitude); 
+      var dLon = deg2rad(lon1.longitude-lat1.longitude);
+      var la1 = lat1.latitude;
+      var la2 = lon1.latitude;
+    }
+    else
+    {
+      var dLat = deg2rad(lat2-lat1); 
+      var dLon = deg2rad(lon2-lon1);
+      var la1 = lat1;
+      var la2 = lat2;
+    }
+
+    var R = 6371;
+    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(deg2rad(la1)) * Math.cos(deg2rad(la2)) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2); 
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    return R*c*1000;
+  };
+
+  this.calculateGeoCoord = function(origin, r, bearing)
+  {
+    var dx = r*Math.cos(bearing);
+    var dy = r*Math.sin(bearing);
+    var dLon = dx/(111320*cos(origin.latitude));
+    var dLat = dy/110540;
+    
+    return { latitude: origin.latitude+dLat, 
+             longitude: origin.longitude+dLon };
+  };
+  
+  this.randomGeoCoord = function(origin, r)
+  {
+    var bearing = Math.random()*2*Math.PI;
+    
+    return calculateGeoCoord(origin, Math.random()*r, bearing);
+  };
   
   this.watchGPSID = 0;
   this.gps = 
@@ -404,9 +449,9 @@ function RoboroCanvas(id)
     speed:     0, 
     altitude:  0, 
     timestamp: 0, 
-    accuracy:  0,
+    accuracy:  100000,
     heading:   0,
-    altitudeAccuracy: 0
+    altitudeAccuracy: 100000
   };
   
   this.startGPS = function()

@@ -144,7 +144,10 @@ function init()
        "store",
        "load",
        "startGPS",
-       "stopGPS"];
+       "stopGPS",
+       "distanceGeoCoord",
+       "calculateGeoCoord",
+       "randomGeoCoord"];
     
     importMethods(window, c, functions)
     
