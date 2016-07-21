@@ -634,12 +634,18 @@ function RoboroCanvas(id)
   
   this.clearScreen = function()
   {
+    this.context2D.save();
+    this.context2D.setTransform(1,0,0,1,0,0);
     this.context2D.clearRect(0, 0, this.width, this.height);
+    this.context2D.restore();
   };
 
   this.fill = function(color)
   {
+    this.context2D.save();
+    this.context2D.setTransform(1,0,0,1,0,0);
     this.rectangle(0, 0, this.width, this.height, color);
+    this.context2D.restore();
   };
 
   this.mixColor = function(red, green, blue)
