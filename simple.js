@@ -237,7 +237,7 @@ function init()
   };
   
   loadErrorConsole();
-  loadScript("http://www.koda.nu/advanced.js", simplify);
+  loadScript("https://www.koda.nu/advanced.js", simplify);
 }
 
 function loadErrorConsole() {

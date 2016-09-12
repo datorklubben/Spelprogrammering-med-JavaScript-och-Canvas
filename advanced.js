@@ -442,6 +442,7 @@ function RoboroCanvas(id)
   };
   
   this.watchGPSID = 0;
+  this.watchGPSIDint = 0;
   this.gps = 
   {
     latitude:  0, 
@@ -474,15 +475,17 @@ function RoboroCanvas(id)
     };
 
     var geo_options = {enableHighAccuracy: true, 
-                       maximumAge        : 30000, 
-                       timeout           : 27000};
+                       maximumAge        : 3000, 
+                       timeout           : 2000};
 
     env.watchGPSID = navigator.geolocation.watchPosition(geo_success, geo_error, geo_options);
+    env.watchGPSIDint = setInterval(function() { navigator.geolocation.getCurrentPosition(geo_success, geo_error, geo_options); } ,2000);
   };
   
   this.stopGPS = function()
   {
     navigator.geolocation.clearWatch(env.watchGPSID);
+    clearInterval(env.watchGPSIDint);
   };
 
   this.store = function(name, value)
@@ -615,23 +618,31 @@ function RoboroCanvas(id)
     var drawPicture = function() 
     {
       if ((typeof(width) != 'undefined') && (typeof(height) != 'undefined'))
-        env.context2D.drawImage(env.pictures[file], x, y, width, height);
+        env.context2D.drawImage(env.pictures[file+x+y+width+height], x, y, width, height);
       else
-        env.context2D.drawImage(env.pictures[file], x, y);
+        env.context2D.drawImage(env.pictures[file+x+y+"00"], x, y);
     }
 
-    if (typeof this.pictures[file] === 'undefined')
+    var w = "0";
+    var h = "0";
+    if ((typeof(width) != 'undefined') && (typeof(height) != 'undefined'))
     {
-      this.pictures[file] = new Image();
-      this.pictures[file].src = file;
-
-      this.pictures[file].onload = drawPicture;
+      w = width;
+      h = height;
     }
-    else if (this.pictures[file].complete)
+
+    if (typeof this.pictures[file+x+y+w+h] === 'undefined')
+    {
+      this.pictures[file+x+y+w+h] = new Image();
+      this.pictures[file+x+y+w+h].src = file;
+
+      this.pictures[file+x+y+w+h].onload = drawPicture;
+    }
+    else if (this.pictures[file+x+y+w+h].complete)
       drawPicture();
 
   };
-  
+
   this.clearScreen = function()
   {
     this.context2D.save();
