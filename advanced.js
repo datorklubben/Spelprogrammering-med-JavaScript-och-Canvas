@@ -617,28 +617,23 @@ function RoboroCanvas(id)
 
     var drawPicture = function() 
     {
-      if ((typeof(width) != 'undefined') && (typeof(height) != 'undefined'))
-        env.context2D.drawImage(env.pictures[file+x+y+width+height], x, y, width, height);
-      else
-        env.context2D.drawImage(env.pictures[file+x+y+"00"], x, y);
+      env.context2D.drawImage(env.pictures[file], x, y);
     }
 
-    var w = "0";
-    var h = "0";
-    if ((typeof(width) != 'undefined') && (typeof(height) != 'undefined'))
+    if (typeof this.pictures[file] === 'undefined')
     {
-      w = width;
-      h = height;
+      this.pictures[file] = new Image();
+      this.pictures[file].src = file;
+      this.pictures[file].onload = drawPicture;
     }
-
-    if (typeof this.pictures[file+x+y+w+h] === 'undefined')
+    else if (!this.pictures[file].complete)
     {
-      this.pictures[file+x+y+w+h] = new Image();
-      this.pictures[file+x+y+w+h].src = file;
-
-      this.pictures[file+x+y+w+h].onload = drawPicture;
+      var randomName = file+Math.random();
+      this.pictures[randomName] = new Image();
+      this.pictures[randomName].src = file;
+      this.pictures[randomName].onload = drawPicture;
     }
-    else if (this.pictures[file+x+y+w+h].complete)
+    else if (this.pictures[file].complete)
       drawPicture();
 
   };
