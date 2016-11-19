@@ -573,8 +573,9 @@ function RoboroCanvas(id)
     this.context2D.fillStyle = args[args.length - 1];
     this.context2D.beginPath();
     
-    for (var i = 0; i < (args.length-1)/2; i++) {
-      this.context2D.lineTo(args[i*2], args[i*2 + 1]);
+    for (var i = 0; i < (args.length - 1) / 2; i++) 
+    {
+      this.context2D.lineTo(args[i * 2], args[i * 2 + 1]);
     }
     
     this.context2D.fill();
