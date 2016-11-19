@@ -592,6 +592,11 @@ function RoboroCanvas(id)
     this.context2D.fillText(text, x, y);
   };
   
+  this.constrain = function(number, min, max)
+  {
+    return Math.min(Math.max(parseInt(number), min), max);
+  }
+  
   this.random = function(max, intervalMax)
   {
     if (typeof(intervalMax) == 'undefined')
