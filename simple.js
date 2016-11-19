@@ -115,13 +115,14 @@ function init()
     
     // Also import a bunch of canvas-related functions from the special canvas
     // that occupies the whole page into the global namespace.
-    var functions =
-      ["circle",
+    ["circle",
        "rectangle",
        "triangle",
+       "polygon",
        "ring",
        "arc",
        "text",
+       "centeredText",
        "random",
        "randomAlternative",
        "picture",
