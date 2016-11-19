@@ -566,6 +566,20 @@ function RoboroCanvas(id)
     this.context2D.fill();
   };
   
+  this.polygon = function() 
+  {
+    var args = Array.prototype.slice.call(arguments);
+
+    this.context2D.fillStyle = args[args.length - 1];
+    this.context2D.beginPath();
+    
+    for (var i = 0; i < (args.length-1)/2; i++) {
+      this.context2D.lineTo(args[i*2], args[i*2 + 1]);
+    }
+    
+    this.context2D.fill();
+  };
+  
   this.ring = function(x, y, radius, lineWidth, color)
   {
     this.context2D.beginPath();
@@ -589,6 +603,15 @@ function RoboroCanvas(id)
   {
     this.context2D.font = size + "pt Courier";
     this.context2D.fillStyle = color;
+    this.context2D.fillText(text, x, y);
+  };
+  
+  this.centeredText = function(x, y, size, text, color)
+  {
+    this.context2D.font = size + "pt Courier";
+    this.context2D.fillStyle = color;
+    this.context2D.textAlign = "center"; 
+    this.context2D.textBaseline = "middle"; 
     this.context2D.fillText(text, x, y);
   };
   
