@@ -122,6 +122,7 @@ function init()
        "ring",
        "arc",
        "text",
+       "constrain",
        "random",
        "randomAlternative",
        "picture",
