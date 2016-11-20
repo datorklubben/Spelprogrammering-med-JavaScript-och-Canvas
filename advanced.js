@@ -568,16 +568,13 @@ function RoboroCanvas(id)
   
   this.polygon = function() 
   {
-    var args = Array.prototype.slice.call(arguments);
-
-    this.context2D.fillStyle = args[args.length - 1];
+    this.context2D.fillStyle = arguments[arguments.length - 1];
     this.context2D.beginPath();
-    
-    for (var i = 0; i < (args.length - 1) / 2; i++) 
+
+    for (var i = 0; i < arguments.length - 1; i += 2) 
     {
-      this.context2D.lineTo(args[i * 2], args[i * 2 + 1]);
+        this.context2D.lineTo(arguments[i], arguments[i + 1]);
     }
-    
     this.context2D.fill();
   };
   
