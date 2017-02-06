@@ -124,6 +124,7 @@ function init()
        "text",
        "random",
        "randomAlternative",
+       "shuffle",
        "picture",
        "clearScreen",
        "fill",

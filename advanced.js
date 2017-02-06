@@ -396,6 +396,24 @@ function RoboroCanvas(id)
     env.running = false;
   };
 
+  this.shuffle = function(array) 
+  {
+    var currentIndex = array.length;
+    var temporaryValue;
+    var randomIndex;
+
+    while (currentIndex !== 0) 
+    {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+
+    return array;
+  }
+
   this.distanceGeoCoord = function(lat1, lon1, lat2, lon2) 
   {
     var deg2rad = function(deg) { return deg * (Math.PI/180) };
@@ -617,7 +635,10 @@ function RoboroCanvas(id)
 
     var drawPicture = function() 
     {
-      env.context2D.drawImage(env.pictures[file], x, y);
+      if ((typeof(width) != 'undefined') && (typeof(height) != 'undefined'))
+        env.context2D.drawImage(env.pictures[file], x, y, width, height);
+      else
+        env.context2D.drawImage(env.pictures[file], x, y);
     }
 
     if (typeof this.pictures[file] === 'undefined')
