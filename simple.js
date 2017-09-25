@@ -125,6 +125,7 @@ function init()
        "random",
        "randomAlternative",
        "shuffle",
+       "promptNumber",
        "picture",
        "clearScreen",
        "fill",

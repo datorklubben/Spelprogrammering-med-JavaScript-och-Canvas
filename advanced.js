@@ -396,6 +396,11 @@ function RoboroCanvas(id)
     env.running = false;
   };
 
+  this.promptNumber = function(question)
+  {
+    return parseFloat(prompt(question));
+  };
+
   this.shuffle = function(array) 
   {
     var currentIndex = array.length;
@@ -412,7 +417,7 @@ function RoboroCanvas(id)
     }
 
     return array;
-  }
+  };
 
   this.distanceGeoCoord = function(lat1, lon1, lat2, lon2) 
   {
